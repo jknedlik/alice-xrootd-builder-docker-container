@@ -6,7 +6,7 @@ use Config::Simple;
 
 
 
-my $Conf=new Config::Simple('apmon.conf');
+my $Conf=new Config::Simple('/etc/xrootd/apmon.conf');
 my %cfg=$Conf->vars();
 if("false" eq $cfg{'apmon.enable'}){
   while(1){sleep(120);}

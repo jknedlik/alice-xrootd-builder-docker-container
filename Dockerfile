@@ -11,7 +11,7 @@ ADD http://alitorrent.cern.ch/src/xrd3/xrd3-installer /xrdinstall/xrd-installer.
 RUN apt-get install wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ -y
 RUN chmod a+x xrd-installer.sh
 ENTRYPOINT ["/xrdinstall/xrd-installer.sh" ,"--install"] 
-CMD ["--version=4.4.0", "--prefix=/opt/xrootd/xrootd-4.4.0-jessie-x86_64/"]
+CMD ["--version=4.4.1", "--prefix=/opt/xrootd/xrootd-4.4.1-jessie-x86_64/"]
 
 #RUN chef-client --local -j /chef/attributes/static.json -o recipe[alicet2_xrootd::xrootd-service]
 #ONBUILD ADD ./ServiceRole.json /chef/roles/DefaultRole.json 
