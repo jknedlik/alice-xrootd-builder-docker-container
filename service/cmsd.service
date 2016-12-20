@@ -1,7 +1,7 @@
 [Unit]
 Description=cmsd for xrootd data server
 Requires=xrootd.service
-
+Requires=apmon.service
 [Install]
 WantedBy=multi-user.target
 Also=xrootd.service
@@ -9,9 +9,9 @@ Also=apmon.service
 
 [Service]
 User=xrootd
-Group=xrootd
 Type=simple
-ExecStart=cmsd -s -n server -l /var/log/xrootd/logs/cmslog -c /etc/xrootd/xrootd.cf
+ExecStart=/usr/bin/cmsd  -l /var/log/xrootd/cmslog -c /etc/xrootd/xrootd.cf
 RestartSec=10
 Restart=always
 TimeoutSec=10
+WorkingDirectory=/var/run/xrootd

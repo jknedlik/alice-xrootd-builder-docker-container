@@ -2,19 +2,18 @@
 Description=apmon for xrootd data server
 Requires=xrootd.service
 Requires=cmsd.service
-After=xrootd.service
-After=cmsd.service
+#After=xrootd.service
+#After=cmsd.service
 
 [Install]
 WantedBy=multi-user.target
-Also=cmsd.service
 Also=xrootd.service
 
 [Service]
 User=xrootd
-Group=xrootd
 Type=simple
 ExecStart=/etc/xrootd/apmon.pl
 RestartSec=10
 Restart=always
 TimeoutSec=10
+WorkingDirectory=/var/run/xrootd
