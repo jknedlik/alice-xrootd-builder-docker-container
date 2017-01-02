@@ -24,6 +24,7 @@ COPY end.sh debianize.sh
 RUN ./debianize.sh
 RUN mkdir /xrdinstall/vol
 COPY alice-xrootd-deb /xrdinstall/alice-xrootd-deb
+RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst
 RUN cp -r /xrdinstall/build/* alice-xrootd-deb/debian/
 RUN make -C alice-xrootd-deb test
 ENTRYPOINT ["cp"]
