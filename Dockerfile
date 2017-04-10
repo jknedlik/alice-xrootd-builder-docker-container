@@ -13,7 +13,7 @@ RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 RUN apt-get install wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ -y
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
-ENV XRD_VER ${XRD_VER:-4.4.1}
+ENV XRD_VER ${XRD_VER:-4.5.0}
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
 RUN mkdir build
 RUN cp -r xrootd build/xrootd
