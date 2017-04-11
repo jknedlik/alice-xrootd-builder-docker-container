@@ -1,10 +1,10 @@
 Package: alice-xrootd
-Version: 4.4.0
+Version: UPSTREAM_VERSION
 Section: admin
 Priority: optional
 Architecture: amd64
 Depends: adduser, make, libc6, libxml2, libssl1.0.0, libcurl4-gnutls-dev, perl, libconfig-simple-perl
 Maintainer: Jan Knedlik <j.knedlik@gsi.de>
 Description: Alice XRootD Installation
- This is a Alice XRootD Installation using the
- xrd3-installer script build into a nice debian package
+ This is an ALICE XRootD package built using the
+ xrd3-installer script.

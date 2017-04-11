@@ -5,7 +5,7 @@ changelog:
 	cp changelog debian/usr/share/doc/alice-xrootd/changelog
 	cp copyright debian/usr/share/doc/alice-xrootd/copyright
 	cp conffiles debian/DEBIAN/conffiles
-	gzip -n9 debian/usr/share/doc/alice-xrootd/changelog
+	gzip -n9f debian/usr/share/doc/alice-xrootd/changelog
 	chmod 0644 debian/usr/share/doc/alice-xrootd/changelog.gz
 test:all
 	lintian debian.deb
