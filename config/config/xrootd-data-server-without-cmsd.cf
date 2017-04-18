@@ -1,7 +1,0 @@
-all.role server
-all.export /
-
-xrd.protocol xrootd *
-xrd.port 1094
-all.adminpath /var/log/xrootd
-all.pidpath /var/run/xrootd

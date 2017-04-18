@@ -1,5 +1,3 @@
 /etc/xrootd/apmon.conf
 /etc/xrootd/apmon.pl
 /etc/xrootd/xrootd.cf
-/etc/xrootd/xrootd-data-server.cf
-/etc/xrootd/xrootd-data-server-without-cmsd.cf
