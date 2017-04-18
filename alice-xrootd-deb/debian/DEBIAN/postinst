@@ -1,9 +1,9 @@
 #!/bin/bash -e
 adduser --home /var/run/xrootd --system --quiet --group xrootd
-ln -s /lib/systemd/system/xrootd.service /etc/systemd/system/xrootd.service
-ln -s /lib/systemd/system/xrootd-with-cmsd.service /etc/systemd/system/xrootd-with-cmsd.service
-ln -s /lib/systemd/system/cmsd.service /etc/systemd/system/cmsd.service
-ln -s /lib/systemd/system/apmon.service /etc/systemd/system/apmon.service
+ln -s /lib/systemd/system/xrootd@.service /etc/systemd/system/xrootd@.service
+ln -s /lib/systemd/system/xrootd-with-cmsd@.service /etc/systemd/system/xrootd-with-cmsd@.service
+ln -s /lib/systemd/system/cmsd@.service /etc/systemd/system/cmsd@.service
+ln -s /lib/systemd/system/apmon@.service /etc/systemd/system/apmon@.service
 ln -s /usr/share/man/man1/xrdcp.1 /usr/share/man/man1/xrdcopy.1
 chown xrootd /var/log/xrootd
 chgrp xrootd /var/log/xrootd
