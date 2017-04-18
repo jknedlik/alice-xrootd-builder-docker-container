@@ -3,7 +3,7 @@
 FROM debian:latest
 MAINTAINER jknedlik <j.knedlik@gsi.de>
 RUN apt-get update
-RUN apt-get dist-upgrade
+RUN apt-get dist-upgrade -y
 RUN apt-get install -y wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf
 #softlink for alicetokenlib to find libcrypto in lib64 ...
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
