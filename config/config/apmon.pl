@@ -6,7 +6,12 @@ use Config::Simple;
 
 
 
-my $Conf=new Config::Simple('/etc/xrootd/apmon.conf');
+if (!(-f $ARGV[0]))
+{
+  print "Could not find the specified config file '" . $ARGV[0] . "'\n";
+  exit 1;
+}
+my $Conf=new Config::Simple($ARGV[0]);
 my %cfg=$Conf->vars();
 if("false" eq $cfg{'apmon.enable'}){
   while(1){sleep(120);}
