@@ -1,6 +1,4 @@
-all.role server
 all.export /
-all.manager localhost 3122
 xrd.protocol xrootd *
 xrd.port 1094
 all.adminpath /var/log/xrootd
