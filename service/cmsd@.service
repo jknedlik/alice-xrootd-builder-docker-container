@@ -1,0 +1,20 @@
+[Unit]
+Description=cmsd for xrootd instance "%i"
+Requires=xrootd@%i.service
+Requires=apmon@%i.service
+[Install]
+WantedBy=multi-user.target
+# Disabled the Also lines, because a bug breaks the enable/disable functionality
+# https://github.com/systemd/systemd/issues/1892
+# Also=xrootd@%i.service
+# Also=apmon@%i.service
+!ConditionPathExists=/etc/xrootd/%i_no_cmsd
+
+[Service]
+User=xrootd
+Type=simple
+ExecStart=/usr/bin/cmsd   -n %i -l /var/log/xrootd/cmslog -c /etc/xrootd/xrootd_%i.cf
+RestartSec=10
+Restart=always
+TimeoutSec=10
+WorkingDirectory=/var/run/xrootd

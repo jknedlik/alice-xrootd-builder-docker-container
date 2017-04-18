@@ -1,0 +1,21 @@
+[Unit]
+Description=apmon for xrootd instance "%i"
+Requires=xrootd@%i.service
+Requires=cmsd@%i.service
+#After=xrootd@%i.service
+#After=cmsd@%i.service
+
+[Install]
+WantedBy=multi-user.target
+# Disabled the Also lines, because a bug breaks the enable/disable functionality
+# https://github.com/systemd/systemd/issues/1892
+# Also=xrootd@%i.service
+
+[Service]
+User=xrootd
+Type=simple
+ExecStart=/etc/xrootd/apmon.pl /etc/xrootd/apmon_%i.conf
+RestartSec=10
+Restart=always
+TimeoutSec=10
+WorkingDirectory=/var/run/xrootd
