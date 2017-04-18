@@ -1,14 +1,8 @@
 [Unit]
 Description=xrootd instance "%i"
-Requires=apmon@%i.service
-Requires=cmsd@%i.service
+
 [Install]
 WantedBy=multi-user.target
-# Disabled the Also lines, because a bug breaks the enable/disable functionality
-# https://github.com/systemd/systemd/issues/1892
-# Also=apmon@%i.service
-# Also=cmsd@%i.service
-
 
 [Service]
 User=xrootd
