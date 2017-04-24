@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Config::Simple;
-
+use Data::Dumper;
 
 
 if (!(-f $ARGV[0]))
@@ -12,6 +12,7 @@ if (!(-f $ARGV[0]))
   exit 1;
 }
 my $Conf=new Config::Simple($ARGV[0]);
+print Dumper($Conf);
 my %cfg=$Conf->vars();
 if("false" eq $cfg{'apmon.enable'}){
   while(1){sleep(120);}
@@ -23,9 +24,11 @@ else{
   $apm->setLogLevel($cfg{'apmon.LogLevel'});
   $apm->setDestinations($cfg{'apmon.MonitorClusterNode'});
   $apm->setMonitorClusterNode($cfg{'xrootd.SE_Name'} . "_SysInfo",  $cfg{'xrootd.Fqdn'});
-  my $cmsdPID = `systemctl -p MainPID show cmsd | awk -F'=' '{print $2}'`;
+  my $command="systemctl -p MainPID show cmsd@"."$cfg{'xrootd.InstanceName'} | awk -F'=' '{print \$2}'";
+  my $cmsdPID =`$command`;
+  $command="systemctl -p MainPID show xrootd@"."$cfg{'xrootd.InstanceName'} | awk -F'=' '{print \$2}'";
+  my $xrootdPID=`$command`;
   $apm->addJobToMonitor($cmsdPID, '', $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_cmsd_Services');
-  my $xrootdPID = `systemctl -p MainPID show xrootd | awk -F'=' '{print $2}'`;
   $apm->addJobToMonitor($xrootdPID, '',  $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_xrootd_Services');
 
   my $pid = fork();
