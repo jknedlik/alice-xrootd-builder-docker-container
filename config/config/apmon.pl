@@ -14,6 +14,7 @@ if (!(-f $ARGV[0]))
 my $Conf=new Config::Simple($ARGV[0]);
 print Dumper($Conf);
 my %cfg=$Conf->vars();
+my $dest = $cfg{'apmon.MonitorClusterNode'};
 if("false" eq $cfg{'apmon.enable'}){
   while(1){sleep(120);}
 }
@@ -22,14 +23,14 @@ else{
   my $apm = new ApMon(0);
 
   $apm->setLogLevel($cfg{'apmon.LogLevel'});
-  $apm->setDestinations($cfg{'apmon.MonitorClusterNode'});
-  $apm->setMonitorClusterNode($cfg{'xrootd.SE_Name'} . "_xrootd_SysInfo",  $cfg{'xrootd.Fqdn'});
+  $apm->setDestinations([$dest]);
+  $apm->setMonitorClusterNode($cfg{'xrootd.SEName'} . "_xrootd_SysInfo",  $cfg{'xrootd.Fqdn'});
   my $command="systemctl -p MainPID show cmsd@"."$cfg{'xrootd.InstanceName'} | awk -F'=' '{print \$2}'";
   my $cmsdPID =`$command`;
   $command="systemctl -p MainPID show xrootd@"."$cfg{'xrootd.InstanceName'} | awk -F'=' '{print \$2}'";
   my $xrootdPID=`$command`;
-  $apm->addJobToMonitor($cmsdPID, '', $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_cmsd_Services', $cfg{'xrootd.Fqdn'});
-  $apm->addJobToMonitor($xrootdPID, '',  $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_xrootd_Services', $cfg{'xrootd.Fqdn'});
+  $apm->addJobToMonitor($cmsdPID, '', $cfg{'xrootd.SEName'} ."_". $cfg{'xrootd.InstanceType'} . '_cmsd_Services', $cfg{'xrootd.Fqdn'});
+  $apm->addJobToMonitor($xrootdPID, '',  $cfg{'xrootd.SEName'} ."_". $cfg{'xrootd.InstanceType'} . '_xrootd_Services', $cfg{'xrootd.Fqdn'});
 
   my $pid = fork();
 
@@ -38,18 +39,18 @@ else{
     while(1)
   	{
       $apm->sendBgMonitoring();
-  		my $xrdver=`xrd 127.0.0.1:${cfg{'xrootd.Port'}} query 1 /dummy | awk '{print \$3}' | cut -d'=' -f 2 `;
+  		my $xrdver=`/usr/bin/xrd 127.0.0.1:${cfg{'xrootd.Port'}} query 1 /dummy | awk '{print \$3}' | cut -d'=' -f 2 `;
   		$xrdver =~ tr/"//d;
       print $xrdver;
-      $apm->sendParameters( $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services', $cfg{'xrootd.Fqdn'}, 'xrootd_version', $xrdver);
+      $apm->sendParameters( $cfg{'xrootd.SEName'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services', $cfg{'xrootd.Fqdn'}, 'xrootd_version', $xrdver);
       {
         use integer;
-        my $totsp = `xrdfs ${cfg{'xrootd.ManagerHost'}}:${cfg{'xrootd.Port'}} spaceinfo / | grep Total | cut -d':' -f 2 | tr -d ' ' `/(1024*1024);
-  		  $apm->sendParameters($cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services',  $cfg{'xrootd.Fqdn'}, 'space_total', $totsp);
-  		  my $freesp = `xrdfs ${cfg{'xrootd.ManagerHost'}}:${cfg{'xrootd.Port'}} spaceinfo / | grep Free | cut -d':' -f 2 | tr -d ' ' `/(1024*1024);
-  		  $apm->sendParameters($cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services', $cfg{'xrootd.Fqdn'}, 'space_free', $freesp);
-  		  my $lrgst = `xrdfs ${cfg{'xrootd.ManagerHost'}}:${cfg{'xrootd.Port'}} spaceinfo / | grep Largest | cut -d':' -f 2 | tr -d ' ' `/(1024*1024);
-  		  $apm->sendParameters($cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services', $cfg{'xrootd.Fqdn'}, 'space_largestfreechunk', $lrgst);
+        my $totsp = `/usr/bin/xrdfs ${cfg{'xrootd.ManagerHost'}}:${cfg{'xrootd.Port'}} spaceinfo / | grep Total | cut -d':' -f 2 | tr -d ' ' `/(1024*1024);
+  		  $apm->sendParameters($cfg{'xrootd.SEName'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services',  $cfg{'xrootd.Fqdn'}, 'space_total', $totsp);
+  		  my $freesp = `/usr/bin/xrdfs ${cfg{'xrootd.ManagerHost'}}:${cfg{'xrootd.Port'}} spaceinfo / | grep Free | cut -d':' -f 2 | tr -d ' ' `/(1024*1024);
+  		  $apm->sendParameters($cfg{'xrootd.SEName'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services', $cfg{'xrootd.Fqdn'}, 'space_free', $freesp);
+  		  my $lrgst = `/usr/bin/xrdfs ${cfg{'xrootd.ManagerHost'}}:${cfg{'xrootd.Port'}} spaceinfo / | grep Largest | cut -d':' -f 2 | tr -d ' ' `/(1024*1024);
+  		  $apm->sendParameters($cfg{'xrootd.SEName'} ."_". $cfg{'xrootd.InstanceType'} .'_xrootd_Services', $cfg{'xrootd.Fqdn'}, 'space_largestfreechunk', $lrgst);
       }
       sleep(120);
   	}
@@ -70,7 +71,7 @@ else{
   		{
   			$Statsdata{$Var} = $Val;
   		}
-  		$apm->sendParameters($cfg{'xrootd.SE_Name'} .'_xrootd_ApMon_Info', $cfg{'xrootd.Fqdn'}, %Statsdata);
+  		$apm->sendParameters($cfg{'xrootd.SEName'} .'_xrootd_ApMon_Info', $cfg{'xrootd.Fqdn'}, %Statsdata);
   	}
   }
 }
