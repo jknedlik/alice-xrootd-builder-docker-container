@@ -27,7 +27,7 @@ RUN echo "alice-xrootd (${XRD_VER}${ADDITIONAL_VERSION_STRING}) UNRELEASED; urge
 RUN echo "  * Package has been built.\n" >>/xrdinstall/alice-xrootd-deb/changelog
 RUN echo " -- Jan Knedlik <j.knedlik@gsi.de>  $(date -R)" >>/xrdinstall/alice-xrootd-deb/changelog
 RUN cp -r /xrdinstall/build/* alice-xrootd-deb/debian/
-RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst
+RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postrm 
 RUN make -C alice-xrootd-deb test
 ENTRYPOINT ["cp"]
 CMD ["alice-xrootd-deb/debian.deb","vol/alice-xrootd.deb"]
