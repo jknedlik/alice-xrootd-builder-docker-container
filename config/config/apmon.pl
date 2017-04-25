@@ -23,13 +23,13 @@ else{
 
   $apm->setLogLevel($cfg{'apmon.LogLevel'});
   $apm->setDestinations($cfg{'apmon.MonitorClusterNode'});
-  $apm->setMonitorClusterNode($cfg{'xrootd.SE_Name'} . "_SysInfo",  $cfg{'xrootd.Fqdn'});
+  $apm->setMonitorClusterNode($cfg{'xrootd.SE_Name'} . "_xrootd_SysInfo",  $cfg{'xrootd.Fqdn'});
   my $command="systemctl -p MainPID show cmsd@"."$cfg{'xrootd.InstanceName'} | awk -F'=' '{print \$2}'";
   my $cmsdPID =`$command`;
   $command="systemctl -p MainPID show xrootd@"."$cfg{'xrootd.InstanceName'} | awk -F'=' '{print \$2}'";
   my $xrootdPID=`$command`;
-  $apm->addJobToMonitor($cmsdPID, '', $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_cmsd_Services');
-  $apm->addJobToMonitor($xrootdPID, '',  $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_xrootd_Services');
+  $apm->addJobToMonitor($cmsdPID, '', $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_cmsd_Services', $cfg{'xrootd.Fqdn'});
+  $apm->addJobToMonitor($xrootdPID, '',  $cfg{'xrootd.SE_Name'} ."_". $cfg{'xrootd.InstanceType'} . '_xrootd_Services', $cfg{'xrootd.Fqdn'});
 
   my $pid = fork();
 
