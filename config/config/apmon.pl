@@ -11,6 +11,12 @@ if (!(-f $ARGV[0]))
   print "Could not find the specified config file '" . $ARGV[0] . "'\n";
   exit 1;
 }
+
+$ARGV[0] =~ "\_([a-zA-Z0-9]+).conf";
+open(my $fh, '>', '/var/run/xrootd/'.$1.'/apmon.pid');
+print $fh $$;
+close $fh;
+
 my $Conf=new Config::Simple($ARGV[0]);
 print Dumper($Conf);
 my %cfg=$Conf->vars();
