@@ -7,7 +7,7 @@ WantedBy=multi-user.target
 [Service]
 User=xrootd
 Type=simple
-ExecStart=apmon /etc/xrootd/apmon_%i.conf
+ExecStart=/usr/bin/apmon /etc/xrootd/apmon_%i.conf
 RestartSec=10
 Restart=always
 TimeoutSec=10
