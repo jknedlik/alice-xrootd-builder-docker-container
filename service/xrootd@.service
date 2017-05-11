@@ -12,3 +12,4 @@ RestartSec=10
 Restart=always
 TimeoutSec=10
 WorkingDirectory=/var/run/xrootd
+LimitNOFILE=65536
