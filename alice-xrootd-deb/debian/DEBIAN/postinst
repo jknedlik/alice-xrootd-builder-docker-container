@@ -6,3 +6,4 @@ chmod 775 /var/log/xrootd
 mkdir -p /var/run/xrootd
 chown xrootd:xrootd /var/run/xrootd
 chmod 775 /var/run/xrootd
+echo "d /var/run/xrootd 0775 xrootd xrootd" >/usr/lib/tmpfiles.d/xrootd.conf

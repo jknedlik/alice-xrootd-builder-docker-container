@@ -11,8 +11,8 @@ WORKDIR /xrdinstall
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
-ARG ADDITIONAL_VERSION_STRING
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
+ARG ADDITIONAL_VERSION_STRING
 RUN mkdir build
 RUN cp -r xrootd build/xrootd
 COPY service /xrdinstall/service
@@ -27,7 +27,7 @@ RUN echo "alice-xrootd (${XRD_VER}${ADDITIONAL_VERSION_STRING}) UNRELEASED; urge
 RUN echo "  * Package has been built.\n" >>/xrdinstall/alice-xrootd-deb/changelog
 RUN echo " -- Jan Knedlik <j.knedlik@gsi.de>  $(date -R)" >>/xrdinstall/alice-xrootd-deb/changelog
 RUN cp -r /xrdinstall/build/* alice-xrootd-deb/debian/
-RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postrm 
+RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postrm
 RUN make -C alice-xrootd-deb test
 ENTRYPOINT ["cp"]
 CMD ["alice-xrootd-deb/debian.deb","vol/alice-xrootd.deb"]
