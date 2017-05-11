@@ -7,7 +7,7 @@ WantedBy=multi-user.target
 [Service]
 User=xrootd
 Type=simple
-ExecStart=/usr/bin/cmsd   -n %i -l /var/log/xrootd/cmsd_%i.log -c /etc/xrootd/xrootd_%i.cf
+ExecStart=/usr/bin/cmsd   -n %i -l /var/log/xrootd/cmsd_%i.log   -c /etc/xrootd/xrootd_%i.cf
 RestartSec=10
 Restart=always
 TimeoutSec=10
