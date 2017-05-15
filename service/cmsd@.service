@@ -8,7 +8,5 @@ WantedBy=multi-user.target
 User=xrootd
 Type=simple
 ExecStart=/usr/bin/cmsd   -n %i -l /var/log/xrootd/cmsd_%i.log   -c /etc/xrootd/xrootd_%i.cf
-RestartSec=10
-Restart=always
 TimeoutSec=10
 WorkingDirectory=/var/run/xrootd

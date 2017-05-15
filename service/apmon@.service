@@ -8,7 +8,5 @@ WantedBy=multi-user.target
 User=xrootd
 Type=simple
 ExecStart=/usr/bin/apmon /etc/xrootd/apmon_%i.conf
-RestartSec=10
-Restart=always
 TimeoutSec=10
 WorkingDirectory=/var/run/xrootd
