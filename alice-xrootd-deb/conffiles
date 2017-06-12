@@ -1,2 +1,3 @@
 /etc/xrootd/apmon.conf
 /etc/xrootd/xrootd.cf
+/etc/logrotate.d/xrootd

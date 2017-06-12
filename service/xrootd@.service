@@ -7,7 +7,7 @@ WantedBy=multi-user.target
 [Service]
 User=xrootd
 Type=simple
-ExecStart=/usr/bin/xrootd -n %i -l /var/log/xrootd/xrootd_%i.log -c /etc/xrootd/xrootd_%i.cf
+ExecStart=/usr/bin/xrootd -n %i -l /var/log/xrootd/xrootd_%i.log -c /etc/xrootd/xrootd_%i.cf -k hup
 TimeoutSec=10
 WorkingDirectory=/var/run/xrootd
 LimitNOFILE=65536

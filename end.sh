@@ -33,6 +33,8 @@ echo Moving ApMon perl headers to usr/lib/perl5/
   rm build/usr/scripts/ApMon/*.sh
   mv build/usr/scripts/ApMon/* build/usr/share/perl5/
   mv config/config/apmon.pl build/usr/bin/apmon
+  mkdir -p build/etc/logrotate.d
+  mv config/config/logrotate-xrootd.conf build/etc/logrotate.d/xrootd
 echo Moving Unit-files to correct path
   mkdir -p build/lib/systemd/system
   cp service/* build/lib/systemd/system/
