@@ -1,3 +1,2 @@
 #!/bin/bash -e
-rm -f /usr/share/man/man1/xrdcopy.1
-rm -f /usr/lib/tmpfiles.d/xrootd.conf
+rm -f /usr/lib/tmpfiles.d/paul-xrootd.conf

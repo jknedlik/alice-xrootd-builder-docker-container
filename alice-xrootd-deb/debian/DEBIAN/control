@@ -1,4 +1,4 @@
-Package: alice-xrootd
+Package: paul-xrootd
 Version: UPSTREAM_VERSION
 Section: admin
 Priority: optional

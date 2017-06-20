@@ -1,5 +1,5 @@
 all.export /
 xrd.protocol xrootd *
 xrd.port 1094
-all.adminpath /var/log/xrootd
-all.pidpath /var/run/xrootd
+all.adminpath /var/log/paul-xrootd
+all.pidpath /var/run/paul-xrootd

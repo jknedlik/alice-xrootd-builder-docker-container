@@ -1,9 +1,8 @@
 #!/bin/bash -e
-adduser --home /var/run/xrootd --system --quiet --group xrootd
-ln -s /usr/share/man/man1/xrdcp.1 /usr/share/man/man1/xrdcopy.1
-chown xrootd:xrootd /var/log/xrootd
-chmod 775 /var/log/xrootd
-mkdir -p /var/run/xrootd
-chown xrootd:xrootd /var/run/xrootd
-chmod 775 /var/run/xrootd
-echo "d /var/run/xrootd 0775 xrootd xrootd" >/usr/lib/tmpfiles.d/xrootd.conf
+adduser --home /var/run/paul-xrootd --system --quiet --group xrootd
+chown xrootd:xrootd /var/log/paul-xrootd
+chmod 775 /var/log/paul-xrootd
+mkdir -p /var/run/paul-xrootd
+chown xrootd:xrootd /var/run/paul-xrootd
+chmod 775 /var/run/paul-xrootd
+echo "d /var/run/paul-xrootd 0775 xrootd xrootd" >/usr/lib/tmpfiles.d/paul-xrootd.conf
