@@ -1,6 +1,6 @@
 # -*- docker-image-name: "xrootd_base" -*-
 # xrootd base image. Provides the base image for each xrootd service
-FROM debian:latest
+FROM debian:8.8
 MAINTAINER jknedlik <j.knedlik@gsi.de>
 RUN apt-get update
 RUN apt-get dist-upgrade -y
