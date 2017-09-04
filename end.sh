@@ -3,8 +3,8 @@
 # chown -R $USER build/*
 echo Moving alice-install to a nice debian package friendly layout
   mv build/* build/usr
-  mkdir build/usr/bin/paul-xrootd
-  mv build/usr/bin/* build/usr/bin/paul-xrootd
+  #mkdir build/usr/bin/paul-xrootd
+  #mv build/usr/bin/* build/usr/bin/paul-xrootd
   mv build/usr/share/xrootd build/usr/share/paul-xrootd
   mv build/usr/include/xrootd build/usr/include/paul-xrootd
 # rm -r build/usr/etc
@@ -29,6 +29,8 @@ do
   strip --strip-debug --strip-unneeded $fn
   patchelf --set-rpath /usr/lib/paul-xrootd $fn
 done
+
+
 echo gzipping info and manpages, removing xrdcopy softlink first
   rm build/usr/share/man/man*/*
   #gzip -9n   build/usr/share/man/man*/*
@@ -44,6 +46,10 @@ echo Moving default config files to correct path
   cp config/config/* build/etc/paul-xrootd
 echo Creating lintian overrides for xrdinstaller problems that cannot be fixed
   cp -r lintian build/usr/share/lintian
+
+
+mv build/usr/bin/paul-xrootd/* build/usr/bin
+
 #echo Removing scripts dir and xrd.sh :\)
   #rm -r build/usr/scripts
 echo Creating /var/log/paul-xrootd
