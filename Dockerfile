@@ -9,16 +9,21 @@ RUN apt-get install -y git wget cmake libxml2 libxml2-dev libssl-dev automake au
 #softlink for alicetokenlib to find libcrypto in lib64 ...
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
 WORKDIR /xrdinstall
-#RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
-#RUN chmod a+x xrd3-installer
 ARG XRD_VER
-RUN git clone --branch local-file-performance-test https://github.com/pkramp/xrootd.git
+RUN git clone --branch local-file-impl https://github.com/xrootd/xrootd.git
+COPY xrootdpatch /xrdinstall/xrootdpatch
+RUN diff -u xrootd/src/XrdXrootd/XrdXrootdXeq.cc xrootdpatch/src/XrdXrootd/XrdXrootdXeq.cc > diff.txt; exit 0
+RUN patch xrootd/src/XrdXrootd/XrdXrootdXeq.cc < diff.txt
 RUN mkdir xrdbuild
-RUN cd xrdbuild && cmake ../xrootd -DCMAKE_INSTALL_PREFIX=/paul-xrootd && make -j5 install
-#RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
+RUN cd xrdbuild && cmake ../xrootd -DCMAKE_INSTALL_PREFIX=/paul-xrootd && make install -j 5
 ARG ADDITIONAL_VERSION_STRING
+
+RUN git clone https://github.com/pkramp/RedirPlugin.git
+RUN cd RedirPlugin && export XROOTD_PATH=/paul-xrootd && cmake . -DCMAKE_INSTALL_PREFIX=/redir-plugin && make install
+
 RUN mkdir build
 RUN cp -r /paul-xrootd build/xrootd
+RUN cp -r /redir-plugin/lib/* build/xrootd/lib
 COPY service /xrdinstall/service
 COPY config /xrdinstall/config
 COPY lintian /xrdinstall/lintian
