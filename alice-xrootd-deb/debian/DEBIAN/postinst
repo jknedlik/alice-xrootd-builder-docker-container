@@ -1,8 +1,8 @@
 #!/bin/bash -e
-adduser --home /var/run/paul-xrootd --system --quiet --group xrootd
-chown xrootd:xrootd /var/log/paul-xrootd
-chmod 775 /var/log/paul-xrootd
-mkdir -p /var/run/paul-xrootd
-chown xrootd:xrootd /var/run/paul-xrootd
-chmod 775 /var/run/paul-xrootd
-echo "d /var/run/paul-xrootd 0775 xrootd xrootd" >/usr/lib/tmpfiles.d/paul-xrootd.conf
+adduser --home /var/run/af-xrootd --system --quiet --group xrootd
+chown xrootd:xrootd /var/log/af-xrootd
+chmod 775 /var/log/af-xrootd
+mkdir -p /var/run/af-xrootd
+chown xrootd:xrootd /var/run/af-xrootd
+chmod 775 /var/run/af-xrootd
+echo "d /var/run/af-xrootd 0775 xrootd xrootd" >/usr/lib/tmpfiles.d/af-xrootd.conf

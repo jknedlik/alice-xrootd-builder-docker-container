@@ -1,5 +1,0 @@
-paul-xrootd: hardening-no-relro
-paul-xrootd: embedded-library
-paul-xrootd: extra-license-file
-paul-xrootd: binary-without-manpage
-paul-xrootd: subdir-in-usr-bin

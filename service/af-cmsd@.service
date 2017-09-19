@@ -1,0 +1,12 @@
+[Unit]
+Description=cmsd for xrootd instance "%i"
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+User=aliaf
+Type=simple
+ExecStart=/usr/bin/cmsd   -n %i -l /var/log/af-xrootd/cmsd_%i.log   -c /etc/af-xrootd/xrootd_%i.cf -k hup -p 1089 -d 3
+TimeoutSec=10
+WorkingDirectory=/var/run/af-xrootd

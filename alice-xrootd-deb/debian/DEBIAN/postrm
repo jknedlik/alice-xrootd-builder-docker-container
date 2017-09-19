@@ -1,2 +1,2 @@
 #!/bin/bash -e
-rm -f /usr/lib/tmpfiles.d/paul-xrootd.conf
+rm -f /usr/lib/tmpfiles.d/af-xrootd.conf

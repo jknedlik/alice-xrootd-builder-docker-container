@@ -1,2 +1,2 @@
-/etc/paul-xrootd/xrootd.cf
-/etc/logrotate.d/paul-xrootd
+/etc/af-xrootd/xrootd.cf
+/etc/logrotate.d/af-xrootd

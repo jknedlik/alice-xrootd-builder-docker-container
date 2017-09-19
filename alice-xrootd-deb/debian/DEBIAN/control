@@ -1,4 +1,4 @@
-Package: paul-xrootd
+Package: af-xrootd
 Version: UPSTREAM_VERSION
 Section: admin
 Priority: optional

@@ -1,0 +1,5 @@
+af-xrootd: hardening-no-relro
+af-xrootd: embedded-library
+af-xrootd: extra-license-file
+af-xrootd: binary-without-manpage
+af-xrootd: subdir-in-usr-bin
