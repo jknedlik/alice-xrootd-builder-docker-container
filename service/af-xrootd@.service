@@ -7,7 +7,7 @@ WantedBy=multi-user.target
 [Service]
 User=aliaf
 Type=simple
-ExecStart=/usr/bin/xrootd -n %i -l /var/log/af-xrootd/xrootd_%i.log -c /etc/af-xrootd/xrootd_%i.cf -k hup -p 1090 -d 3
+ExecStart=/usr/bin/xrootd -n %i -l /var/log/af-xrootd/xrootd_%i.log -c /etc/af-xrootd/xrootd_%i.cf -k hup -p 1094 -d 3
 TimeoutSec=10
 WorkingDirectory=/var/run/af-xrootd
 LimitNOFILE=65536
