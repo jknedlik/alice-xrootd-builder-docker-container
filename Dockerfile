@@ -10,7 +10,6 @@ RUN apt-get install -y git wget cmake libxml2 libxml2-dev libssl-dev automake au
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
 WORKDIR /xrdinstall
 ARG XRD_VER
-#RUN git clone --branch local-file-performance-test https://github.com/pkramp/xrootd.git
 RUN git clone --branch master https://github.com/xrootd/xrootd.git
 COPY xrootdpatch /xrdinstall/xrootdpatch
 RUN diff -u xrootd/src/XrdXrootd/XrdXrootdXeq.cc xrootdpatch/src/XrdXrootd/XrdXrootdXeq.cc > diff.txt; exit 0
@@ -18,13 +17,16 @@ RUN patch xrootd/src/XrdXrootd/XrdXrootdXeq.cc < diff.txt
 RUN mkdir xrdbuild
 RUN cd xrdbuild && cmake ../xrootd -DCMAKE_INSTALL_PREFIX=/af-xrootd && make install -j 5
 ARG ADDITIONAL_VERSION_STRING
-
-RUN git clone https://github.com/pkramp/RedirPlugin.git &&ls -la
-RUN cd RedirPlugin && export XROOTD_PATH=/af-xrootd && cmake . -DCMAKE_INSTALL_PREFIX=/redir-plugin && make install 
-
+RUN git clone https://github.com/pkramp/RedirPlugin.git --branch kit-proj
+#COPY RedirPlugin RedirPlugin
+RUN cd RedirPlugin && export XROOTD_PATH=/af-xrootd && cmake . -DCMAKE_INSTALL_PREFIX=/redir-plugin && make install
+RUN git clone https://github.com/jknedlik/XrdProxyPrefix --branch kit-proj
+#COPY XrdProxyPrefix XrdProxyPrefix
+RUN cd XrdProxyPrefix && export XROOTD_PATH=/af-xrootd && export XRD_PATH=/af-xrootd && make
 RUN mkdir build
 RUN cp -r /af-xrootd build/xrootd
 RUN cp -r /redir-plugin/lib/* build/xrootd/lib
+RUN cp -r XrdProxyPrefix/XrdProxyPrefix.so build/xrootd/lib
 COPY service /xrdinstall/service
 COPY config /xrdinstall/config
 COPY lintian /xrdinstall/lintian
