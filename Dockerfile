@@ -10,10 +10,7 @@ RUN apt-get install -y git wget cmake libxml2 libxml2-dev libssl-dev automake au
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
 WORKDIR /xrdinstall
 ARG XRD_VER
-RUN git clone --branch master https://github.com/xrootd/xrootd.git
-COPY xrootdpatch /xrdinstall/xrootdpatch
-RUN diff -u xrootd/src/XrdXrootd/XrdXrootdXeq.cc xrootdpatch/src/XrdXrootd/XrdXrootdXeq.cc > diff.txt; exit 0
-RUN patch xrootd/src/XrdXrootd/XrdXrootdXeq.cc < diff.txt
+RUN git clone --branch stable-4.8.x https://github.com/xrootd/xrootd.git
 RUN mkdir xrdbuild
 RUN cd xrdbuild && cmake ../xrootd -DCMAKE_INSTALL_PREFIX=/af-xrootd && make install -j 5
 ARG ADDITIONAL_VERSION_STRING
