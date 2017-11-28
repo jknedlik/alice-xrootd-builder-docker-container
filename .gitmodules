@@ -1,0 +1,3 @@
+[submodule "xrd3-installer"]
+	path = xrd3-installer
+	url = git@git.gsi.de:dc/XRootD-Reps/xrd3-installer.git
