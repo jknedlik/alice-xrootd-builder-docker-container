@@ -4,13 +4,16 @@ FROM debian:8.8
 MAINTAINER jknedlik <j.knedlik@gsi.de>
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt-get install -y wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf
+RUN apt-get install -y wget git cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf
 #softlink for alicetokenlib to find libcrypto in lib64 ...
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
 WORKDIR /xrdinstall
-RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
+COPY xrd3-installer/xrd3-installer xrd3-installer
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
+RUN git clone -b stable-4.8.x https://github.com/xrootd/xrootd.git
+RUN cd xrootd && git checkout 9202413033f4ec3df2bd8677353b21b7230b45b6
+RUN mv xrootd xrootd-$XRD_VER && tar -cvzf /xrdbase.tar.gz xrootd-4.6.1
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
 ARG ADDITIONAL_VERSION_STRING
 RUN mkdir build
