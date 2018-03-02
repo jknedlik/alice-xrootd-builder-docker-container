@@ -1,0 +1,3 @@
+[submodule "xrootd-alicetokenacc"]
+	path = xrootd-alicetokenacc
+	url = ./xrootd-alicetokenacc
