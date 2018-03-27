@@ -10,10 +10,21 @@ RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/
 WORKDIR /xrdinstall
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 RUN chmod a+x xrd3-installer
-ARG XRD_VER
+ARG XRD_VER=4.8.1
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
+#Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+COPY xrootd-alicetokenacc/XrdAliceTokenAcc.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+COPY xrootd-alicetokenacc/XrdAliceTokenAcc.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+#COPY xrootd-alicetokenacc/
+#COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+#COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+#Then run make
+WORKDIR /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+RUN make && make install
+WORKDIR /xrdinstall
 ARG ADDITIONAL_VERSION_STRING
 RUN mkdir build
+#Now copy relevant files
 RUN cp -r xrootd build/xrootd
 COPY service /xrdinstall/service
 COPY config /xrdinstall/config
