@@ -1,9 +1,10 @@
-#all.export /
+all.export /
 #xrd.protocol xrootd *
 #xrd.port 1094
 #all.adminpath /var/log/xrootd
 #all.pidpath /var/run/xrootd
-xrootd.export /
+#xrootd.export /
+oss.localroot /tmp/
 xrootd.seclib /usr/lib/alice-xrootd/libXrdSec.so
 sec.protocol /usr/lib/alice-xrootd unix
 ofs.authlib /usr/lib/alice-xrootd/libXrdAliceTokenAcc.so
