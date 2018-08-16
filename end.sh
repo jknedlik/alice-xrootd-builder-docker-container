@@ -19,7 +19,7 @@ do
   patchelf --set-rpath /usr/lib/alice-xrootd $fn
   chmod a-x $fn
 done
-for fn in `find build/ -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary' | awk -F':' {'print $1'}` ;
+for fn in `find build/usr/bin -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary\|application/x-sharedlib; charset=binary' | awk -F':' {'print $1'}` ;
 do
   echo  "   Stripping $fn and setting its rpath"
   strip --strip-debug --strip-unneeded $fn
