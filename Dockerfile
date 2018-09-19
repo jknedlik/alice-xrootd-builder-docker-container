@@ -38,4 +38,3 @@ RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst /xrdinstall/a
 RUN make -C alice-xrootd-deb test
 ENTRYPOINT ["cp"]
 CMD ["alice-xrootd-deb/debian.deb","vol/alice-xrootd.deb"]
-CMD ["/bin/bash"]
