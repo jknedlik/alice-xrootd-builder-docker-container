@@ -9,6 +9,7 @@ echo Moving alice-install to a nice debian package friendly layout
   rm -r build/usr/lib64
   mkdir build/usr/lib/alice-xrootd
   mv build/usr/lib/* build/usr/lib/alice-xrootd
+  rm build/usr/bin/autoconf
 echo removing .la files
   find ./build -type f -name '*.la' -exec rm {} +
 echo stripping binaries and shared libraries of their debug symbols and setting rpath
