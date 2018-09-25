@@ -10,10 +10,15 @@ echo Moving alice-install to a nice debian package friendly layout
   mkdir build/usr/lib/alice-xrootd
   mv build/usr/lib/* build/usr/lib/alice-xrootd
 
-echo removing supposedly unimportant build binaries of xrdinstaller
+echo removing supposedly unimportant build-binaries and manpages of xrdinstaller
   cd build/usr/bin
-  rm  aclocal aclocal-1.10 autoconf autoheader autom4te automake automake-1.10 autoreconf autoscan autoupdate libtool libtoolize cconfig
+  rm  aclocal aclocal-1.10 autoconf autoheader autom4te automake automake-1.10 autoreconf autoscan autoupdate libtool libtoolize cconfig ifnames
   cd ../../..
+  cd build/usr/share
+  rm -rf aclocal* autoconf automake-1.10 libtool
+  cd man/man1
+  rm -rf auto* ifnames* config*
+  cd ../../../../../
 echo removing .la files
   find ./build -type f -name '*.la' -exec rm {} +
 echo stripping binaries and shared libraries of their debug symbols and setting rpath
