@@ -1,4 +1,4 @@
-alice-xrootd: hardening-no-relro
-alice-xrootd: embedded-library
-alice-xrootd: extra-license-file
-alice-xrootd: binary-without-manpage
+escape-xrootd: hardening-no-relro
+escape-xrootd: embedded-library
+escape-xrootd: extra-license-file
+escape-xrootd: binary-without-manpage
