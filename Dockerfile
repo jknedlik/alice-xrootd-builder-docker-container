@@ -38,9 +38,10 @@ RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && openssl version
 # XROOTD
 WORKDIR /xrdinstall
 ARG XRD_VER
-RUN curl -L -O https://github.com/xrootd/xrootd/archive/v4.12.4.tar.gz
-RUN tar -xzf v4.12.4.tar.gz 
-RUN mv xrootd-4.12.4/* .
+RUN curl -L -O https://github.com/xrootd/xrootd/archive/v5.1.0-rc3.tar.gz
+RUN tar -xzf v5.1.0-rc3.tar.gz
+RUN ls
+RUN mv xrootd-5.1.0-rc3/* .
 RUN mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && make -j 8 && make install
 RUN rm -rf build
 RUN mkdir build && cd build && cmake ../ && make -j 8 && make install
@@ -61,7 +62,7 @@ RUN curl -L https://github.com/Thalhammer/jwt-cpp/archive/v0.3.1.zip -o jwtv0.3.
 RUN unzip "jwtv0.3.1.zip"
 RUN cd jwt-cpp-0.3.1/ && cat Makefile && make -j 8 && ls &&  make install
 ARG ADDITIONAL_VERSION_STRING
-
+RUN ls
 #SCITOKENS-CPP
 RUN mkdir scitokens-cpp
 WORKDIR /xrdinstall/scitokens-cpp
@@ -69,6 +70,7 @@ RUN curl -L https://github.com/scitokens/scitokens-cpp/archive/v0.5.1.zip -o sci
 RUN unzip "scitokens-cpp.zip"
 RUN mv scitokens-cpp-0.5.1/* .
 RUN mkdir build && cd build && cmake ../ && ls && make -j 8 && make install
+RUN rm -rf build && mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && ls && make -j 8 && make install
 
 #SCITOKENS-XROOTD
 RUN mkdir scitokens-xrootd
@@ -84,6 +86,7 @@ WORKDIR /xrdinstall/xrootd-lcmaps
 RUN curl -L https://github.com/opensciencegrid/xrootd-lcmaps/archive/v1.7.8-2.zip -o xrootd-lcmaps.zip
 RUN unzip "xrootd-lcmaps.zip"
 RUN mv xrootd-lcmaps-1.7.8-2/* .
+RUN echo "#include <string.h>\n" |cat - /xrdinstall/xrootd-lcmaps/src/XrdHttpLcmaps.cc > /tmp/out && mv /tmp/out /xrdinstall/xrootd-lcmaps/src/XrdHttpLcmaps.cc
 RUN mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && ls && make -j 8 && make install
 
 # back to XRootD
