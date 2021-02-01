@@ -9,6 +9,16 @@ echo Moving alice-install to a nice debian package friendly layout
   rm -r build/usr/lib64
   mkdir build/usr/lib/alice-xrootd
   mv build/usr/lib/* build/usr/lib/alice-xrootd
+
+echo removing supposedly unimportant build-binaries and manpages of xrdinstaller
+  cd build/usr/bin
+  rm  aclocal aclocal-1.10 autoconf autoheader autom4te automake automake-1.10 autoreconf autoscan autoupdate libtool libtoolize cconfig ifnames
+  cd ../../..
+  cd build/usr/share
+  rm -rf aclocal* autoconf automake-1.10 libtool
+  cd man/man1
+  rm -rf auto* ifnames* config*
+  cd ../../../../../
 echo removing .la files
   find ./build -type f -name '*.la' -exec rm {} +
 echo stripping binaries and shared libraries of their debug symbols and setting rpath
@@ -19,7 +29,7 @@ do
   patchelf --set-rpath /usr/lib/alice-xrootd $fn
   chmod a-x $fn
 done
-for fn in `find build/ -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary' | awk -F':' {'print $1'}` ;
+for fn in `find build/usr/bin -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary\|application/x-sharedlib; charset=binary' | awk -F':' {'print $1'}` ;
 do
   echo  "   Stripping $fn and setting its rpath"
   strip --strip-debug --strip-unneeded $fn
