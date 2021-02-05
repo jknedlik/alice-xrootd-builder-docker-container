@@ -8,11 +8,7 @@ ARG DEB_VER=debian:8.8
 RUN echo $DEB_VER
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt-get install -y wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf
-RUN apt-get install -y wget cmake libxml2 libxml2-dev  automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev unzip pkg-config sqlite3 libsqlite3-dev
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y lcmaps-plugins-jobrep voms-server lcmaps-plugins-voms lcmaps-globus-interface
-RUN apt-get install -y build-essential voms-dev
+RUN apt-get install -y wget cmake libxml2 libssl-dev libxml2-dev  automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev libssl-dev
 #RUN  if [  "x$DEB_VER" = "xdebian:8.8" ] ; then apt-get install -y libssl-dev; else apt-get install -y libssl1.0-dev libssl1.0.2; fi
 #softlink for alicetokenlib to find libcrypto in lib64 ...
 RUN ls
