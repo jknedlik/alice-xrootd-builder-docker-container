@@ -20,20 +20,20 @@ ARG XRD_VER
 
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
 
-
+RUN ls
 #Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 WORKDIR /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
 COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
 COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
 RUN rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o
-RUN  make && make install
+RUN  make clean && make && make install
 #COPY xrootd-alicetokenacc/
 WORKDIR /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 RUN rm /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5//XrdAliceTokenAcc.o
 #Then run make
-RUN  make && make install
+RUN make clean && make && make install
 
 WORKDIR /xrdinstall
 ARG ADDITIONAL_VERSION_STRING
