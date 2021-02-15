@@ -15,3 +15,4 @@ alicetokenacc.symlinks /tmp/symlinks
 alicetokenacc.nolfnlog /var/log/xrootd/nolfn.log
 alicetokenacc.authorizationfile /var/run/xrootd/.authz/xrootd/
 alicetokenacc.enableSymlinks False
+alicetokenacc.enableDebug False
