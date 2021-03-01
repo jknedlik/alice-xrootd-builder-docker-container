@@ -1,26 +1,35 @@
 
 # -*- docker-image-name: "xrootd_base" -*-
 # xrootd base image. Provides the base image for each xrootd service
-ARG DEB_VER=debian:8.8
+
+ARG DEB_VER=debian:10.8
 FROM $DEB_VER
 MAINTAINER jknedlik <j.knedlik@gsi.de>
-ARG DEB_VER=debian:8.8
+ARG DEB_VER=debian:10.8
 RUN echo $DEB_VER
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-RUN apt-get install -y wget cmake libxml2 libssl-dev libxml2-dev  automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev libssl-dev
+#libssl-dev
+RUN apt-get install -y wget cmake libxml2  libxml2-dev  automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev
 #RUN  if [  "x$DEB_VER" = "xdebian:8.8" ] ; then apt-get install -y libssl-dev; else apt-get install -y libssl1.0-dev libssl1.0.2; fi
 #softlink for alicetokenlib to find libcrypto in lib64 ...
-RUN ls
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
+WORKDIR /tmp
+RUN wget http://deb.debian.org/debian/pool/main/o/openssl1.0/libssl1.0.2_1.0.2u-1~deb9u1_amd64.deb
+RUN yes | dpkg -i libssl1.0.2_1.0.2u-1~deb9u1_amd64.deb
+RUN wget http://deb.debian.org/debian/pool/main/o/openssl1.0/libssl1.0-dev_1.0.2u-1~deb9u1_amd64.deb
+RUN yes | dpkg -i libssl1.0-dev_1.0.2u-1~deb9u1_amd64.deb
+RUN find / -iname "*ssl*"
 WORKDIR /xrdinstall
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
+COPY xrd3-installer-debug xrd3-installer
+#COPY modified-configure /tmp/modified-configure
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
-
+#COPY xrootd-alicetokenacc/tokenauthz-1.1.10/SealedEnvelope/TSealedEnvelope.h /tmp/TSealedEnvelope.h
+WORKDIR /xrdinstall
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
 
-RUN ls
 #Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 WORKDIR /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
 COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
@@ -44,6 +53,7 @@ COPY service /xrdinstall/service
 COPY config /xrdinstall/config
 COPY lintian /xrdinstall/lintian
 COPY end.sh debianize.sh
+RUN ls
 RUN ./debianize.sh
 CMD ["/bin/bash"]
 RUN mkdir /xrdinstall/vol
