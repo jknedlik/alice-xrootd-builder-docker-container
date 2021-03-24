@@ -5,10 +5,10 @@ ARG DEB_VER=debian:8.8
 FROM $DEB_VER
 MAINTAINER jknedlik <j.knedlik@gsi.de>
 ARG DEB_VER=debian:8.8
-RUN echo $DEB_VER
 RUN apt-get update
+RUN echo $DEB_VER
 RUN apt-get dist-upgrade -y
-RUN apt-get install -y wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev
+RUN apt-get install -y git wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev
 #RUN  if [  "x$DEB_VER" = "xdebian:8.8" ] ; then apt-get install -y libssl-dev; else apt-get install -y libssl1.0-dev libssl1.0.2; fi
 #softlink for alicetokenlib to find libcrypto in lib64 ...
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
@@ -23,6 +23,17 @@ RUN cp -r xrootd build/xrootd
 COPY service /xrdinstall/service
 COPY config /xrdinstall/config
 COPY lintian /xrdinstall/lintian
+#build lustre
+RUN apt-get install -y linux-headers-amd64 libyaml-dev
+RUN git clone --branch 2.12.4 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git
+RUN cd lustre-release && git checkout 2.12.4 && sh autogen.sh && ./configure --disable-modules --prefix /lustre
+RUN cd lustre-release && make -j8 
+RUN cd lustre-release && make install
+#build LibXrdLustreOss.so
+RUN git clone --branch master --depth 1 --single-branch https://github.com/jknedlik/XrdLustreOssWrapper
+RUN cd XrdLustreOssWrapper/src && LIBRARY_PATH=/xrdinstall/xrootd/lib64 XRD_PATH=/xrdinstall/xrootd LUSTRE_PATH=/lustre make 
+RUN cp XrdLustreOssWrapper/src/LibXrdLustreOss.so* /xrdinstall/build/xrootd/lib
+# debianize the heck out of it
 COPY end.sh debianize.sh
 RUN ./debianize.sh
 CMD ["/bin/bash"]
