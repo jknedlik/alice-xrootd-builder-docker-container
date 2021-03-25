@@ -1,0 +1,264 @@
+#!/bin/bash
+usage () {
+    echo "xrd-installer [--install] [--binary sl5_32|sl5_64|sl6_32|sl6_64|ubuntu_64] [-h] [-l] [n] [-p <packagename>] [--prefix install-prefix] [--version version] [--compiledir compile-directory] [--noclean]"
+    echo "    -h        : print help"
+    echo "    -l        : list packages"
+    echo "    -p <name> : select package"
+    echo "    -n        : don't install autotools"
+    echo "    --noclean : don't cleanup the compilation directory "
+    echo "    --install : install all packages or the selected packages with -p option"
+    echo "    --binary <platform : download binary package if avilable for platform slc5 32/64 bit or slc6 32/64 bit";
+    echo "    --prefix  <perfix>  : set the installation prefix (default $HOME/xrdserver) "
+    echo "    --version <version> : select the version to install (default is PRO)"
+    echo "    --compiledir <dir>  : set the compilation directory (default is /tmp/xrd-installer-$USER) "
+}
+
+autotools=1
+noclean=0
+install=0
+listpackages=0
+binary=""
+
+export PREFIX="$HOME/xrdserver"
+export VERSION="PRO"
+export COMPILEDIR="/tmp/xrd-installer-$USER/"
+
+TEMP=`getopt -o hp:nl --long help,package:,prefix:,version:,compiledir:,noclean,install,binary:, -n 'xrd-installer' -- "$@"`
+if [ $? != 0 ] ; then usage ; exit 1 ; fi
+#echo "TEMP: $TEMP"
+eval set -- "$TEMP"
+
+while true; do
+    case "$1" in
+        --help|-h)
+            usage
+            exit
+            ;;
+	--package|-p)
+	    packages="$2"
+	    shift 2
+	   ;;
+        --prefix)
+            PREFIX="$2"
+            shift 2
+            ;;
+        --version)
+            VERSION="$2"
+            shift 2
+            ;;
+        --compiledir)
+            COMPILEDIR="$2"
+            shift 2
+            ;;
+	--noclean)
+	    noclean=1;
+	    shift 1
+	    ;;
+	--binary)
+	    binary="$2";
+	    shift 2
+	    ;;
+        -n)
+	    autotools=0
+            shift
+            ;;
+	-l)
+	    listpackages=1;
+	    shift
+	    ;;
+        --install)
+            install=1;
+	    shift
+	    ;;
+        --) shift; break;;
+     esac	
+done
+
+
+echo "# xrd-installer: prefix:=$PREFIX compiledir:=$COMPILEDIR version:=$VERSION"
+if [ -e $COMPILEDIR ]; then
+	if [ -e ".xrd-installer" ]; then
+	   $noclean || rm -rf $COMPILEDIR
+	fi	
+fi
+
+mkdir -p $COMPILEDIR 
+touch $COMPILEDIR/.xrd-installer
+
+cd $COMPILEDIR
+
+if [ $? != "0" ]; then
+	echo "Error: cannot create the compilation directory $COMPILEDIR";
+	exit -1;
+fi
+
+if [ "x$packages" = "x" ]; then
+    unlink packagelist >& /dev/null
+    wget -nc http://alitorrent.cern.ch/src/xrd3/v-$VERSION/packagelist -o packages.log
+    
+    if [ -e packagelist ]; then
+	source packagelist
+    else
+	echo "Error: couldn't download the package list of version $VERSION - aborting!"
+	exit -1;
+    fi
+fi
+
+if [ "x$binary" != "x" ]; then
+    newpackages=${packages//xrdbase/};
+    packages=$newpackages
+else 
+    # check for cmake
+    mycmake=`which cmake 2> /dev/null`;
+    if [ "x$mycmake" = "x" ]; then
+	echo "Error: you don't have cmake installed or it is not in the execution path!";
+	exit -1;
+    else 
+	echo -----] Using cmake \<$mycmake\>
+    fi
+fi
+
+if [ $listpackages = "1" ]; then
+    exit
+fi
+
+if [ $install = "0" ]; then
+    echo "Info: use --install to run an installation"
+    exit 0;
+fi
+
+if [ "x$binary" != "x" ]; then
+    unlink xrootd.tar.gz >& /dev/null
+    unlink urls.binary >& /dev/null
+    wget -nc http://alitorrent.cern.ch/src/xrd3/v-$VERSION/urls.binary -o url.binary.download.log
+
+    if [ -e urls.binary ]; then
+	source urls.binary
+    else
+	echo "Error: couldn't download the binary list of version $VERSION - aborting!";
+	exit -1;
+    fi
+
+    binarydef=`eval echo $\xrootd_binary_url_$binary`; 
+    
+    if [  "x$binarydef" = "x" ]; then
+	echo "Error: there is no binary package for platform <$binary>";
+	exit -1;
+    else 
+	echo "-----] using binary xrootd for platform $binary => downloading from $binarydef";
+	wget -nc $binarydef -O xrootd.tar.gz -o xrootd.binary.download.log
+	mkdir -p $PREFIX
+	tar --directory $PREFIX --strip 1 -xzf xrootd.tar.gz
+	echo "-----] binary installed under $PREFIX"
+	exit 0;
+    fi
+fi
+
+
+if [ $autotools = "1" ]; then
+    t0=`date +%s`
+    echo -----] fetching autotools script ...
+    wget -nc http://alitorrent.cern.ch/src/xrd3/xrd-autotools -o xrd-autotools.log
+    if [ ! -e xrd-autotools ]; then
+	echo "Error: cannot get the autotools installation script - abort";
+	exit -1;
+    fi
+    echo -n -----] configuring autotools ....
+    chmod u+x ./xrd-autotools
+    mkdir -p $PREFIX
+    mkdir -p $COMPILEDIR/autotools
+    ./xrd-autotools -i $PREFIX -b $COMPILEDIR/autotools -f >& autotools.log
+    t1=`date +%s`
+    INTERVAL=`expr $t1 - $t0`	
+    echo " [$INTERVAL s]"
+    if [ $? != "0" ]; then
+	echo -----] install autotools FAILED
+	exit -1
+    fi	
+    echo -----] install autotools OK 
+fi	
+
+export PATH=$PREFIX/bin:$PATH
+
+for name in $packages; do
+    unlink $name.tar.gz >& /dev/null
+    wget -nc http://alitorrent.cern.ch/src/xrd3/v-$VERSION/$name.tar.gz -o $name.log
+done
+ls -la
+for name in $packages; do
+    echo $name
+    cd $COMPILEDIR
+    rm -rf $name >& /dev/null
+    mkdir -p $name 
+    cd $name 
+    if [ $? != "0" ]; then
+	echo "Error: Package $packages has a problem .... aborting";
+	exit -1;
+    fi
+    tar xvzf ../$name.tar.gz >& $name.tar.log
+    newdir=`ls | grep -v ".tar.log"`
+    cd $newdir
+    if [ $? != "0" ]; then
+	echo "Error: Package $packages has a problem .... aborting";
+	exit -1;
+    fi
+#    echo $PWD
+    wget -nc http://alitorrent.cern.ch/src/xrd3/v-$VERSION/$name.configure -o $name.configure.log
+    if [ -e $name.configure ]; then
+        t0=`date +%s`
+	echo -n -----] configuring $newdir
+	chmod u+x $name.configure
+  islibtoken=false
+  #if [ "$name" = "libtokenauthz" ]; then
+    #echo "-----DEBUG: ----- : Copying new configure script"
+    #cp /tmp/modified-configure configure
+    #islibtoken=true
+  #fi
+
+	source ./$name.configure
+  ls
+	res=$?
+        t1=`date +%s`
+        INTERVAL=`expr $t1 - $t0`	
+	echo " [$INTERVAL s] "
+	if [ $res -eq "0" ]; then
+	    t0=`date +%s`
+      if [ "$islibtoken" = true ] ; then 
+        cp /tmp/TSealedEnvelope.h SealedEnvelope/TSealedEnvelope.h
+      fi
+	    echo -n -----] make $newdir
+	    make 
+	    res=$?
+            t1=`date +%s`
+            INTERVAL=`expr $t1 - $t0`	
+	    echo " [$INTERVAL s] "
+	    if [ $res -eq "0" ]; then
+		echo -----] make OK
+	        t0=`date +%s`
+		echo -n -----] make install $newdir 
+		make install
+		res=$?
+		t1=`date +%s`
+	        INTERVAL=`expr $t1 - $t0`	
+		echo " [$INTERVAL s] "
+		if [ $res -eq "0" ]; then
+		    echo -----] make install OK
+		else
+		    echo -----] make install FAILED
+		fi
+	    else
+		echo -----] make FAILED
+	    fi
+	else
+	    if [ -e $name.skip ]; then
+		echo -----] configure SKIPPED
+	    else
+		echo -----] configure FAILED
+	    fi
+	fi
+    else 
+		    
+	echo -----] nothing to configure for $newdir
+    fi
+    cd ../../
+done
