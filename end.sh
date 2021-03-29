@@ -26,7 +26,7 @@ for fn in `find build/usr/lib  -exec file -i '{}' \; |grep x-sharedlib | awk -F'
 do
   echo  "  Stripping $fn and setting rpath to /usr/lib/alice-xrootd"
   strip --strip-debug --strip-unneeded $fn
-  patchelf --set-rpath /usr/lib/alice-xrootd $fn
+  patchelf --set-rpath /usr/lib/alice-xrootd:/usr/lib $fn
   chmod a-x $fn
 done
 for fn in `find build/usr/bin -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary\|application/x-sharedlib; charset=binary' | awk -F':' {'print $1'}` ;
