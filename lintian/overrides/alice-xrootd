@@ -2,3 +2,4 @@ alice-xrootd: hardening-no-relro
 alice-xrootd: embedded-library
 alice-xrootd: extra-license-file
 alice-xrootd: binary-without-manpage
+alice-xrootd: binary-or-shlib-defines-rpath

@@ -184,7 +184,6 @@ for name in $packages; do
     unlink $name.tar.gz >& /dev/null
     wget -nc http://alitorrent.cern.ch/src/xrd3/v-$VERSION/$name.tar.gz -o $name.log
 done
-ls -la
 for name in $packages; do
     echo $name
     cd $COMPILEDIR
@@ -208,24 +207,21 @@ for name in $packages; do
         t0=`date +%s`
 	echo -n -----] configuring $newdir
 	chmod u+x $name.configure
-  islibtoken=false
-  #if [ "$name" = "libtokenauthz" ]; then
-    #echo "-----DEBUG: ----- : Copying new configure script"
-    #cp /tmp/modified-configure configure
-    #islibtoken=true
-  #fi
-
+  if [ "$name" = "libtokenauthz" ]; then
+    echo "-----DEBUG: ----- : Copying new configure script"
+    cp libtokenauthz.configure /tmp/lib.conf
+    rm -rf *
+    cp /tmp/lib.conf libtokenauthz.configure
+    cp -r /tmp/tokenauthz-custom-openssl1.1/. .
+    echo "-----DEBUG DONE: ----- : Copying new configure script"
+  fi
 	source ./$name.configure
-  ls
 	res=$?
         t1=`date +%s`
         INTERVAL=`expr $t1 - $t0`	
 	echo " [$INTERVAL s] "
 	if [ $res -eq "0" ]; then
 	    t0=`date +%s`
-      if [ "$islibtoken" = true ] ; then 
-        cp /tmp/TSealedEnvelope.h SealedEnvelope/TSealedEnvelope.h
-      fi
 	    echo -n -----] make $newdir
 	    make 
 	    res=$?

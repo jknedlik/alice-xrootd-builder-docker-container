@@ -16,16 +16,19 @@ RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/
 WORKDIR /xrdinstall
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 # Comment in to see build-failures:
-# COPY xrd3-installer-debug xrd3-installer
+COPY xrd3-installer-debug /tmp/xrd3-installer
+RUN  if [  "x$DEB_VER" = "xdebian:10.8" ]; then cp /tmp/xrd3-installer xrd3-installer ; fi
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
 WORKDIR /xrdinstall
+COPY xrootd-alicetokenacc/tokenauthz-custom-openssl1.1/ /tmp/tokenauthz-custom-openssl1.1
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
-
 #Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 WORKDIR /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
-COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
-COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
+RUN ls
+COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/TTokenAuthz.cxx
+COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/TTokenAuthz.h
+RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ]; then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10; fi
 RUN rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o
 RUN  make clean && make && make install
 #COPY xrootd-alicetokenacc/
@@ -52,11 +55,10 @@ RUN cd lustre-release && make -j8
 RUN cd lustre-release && make install
 #build LibXrdLustreOss.so
 RUN git clone --branch master --depth 1 --single-branch https://github.com/jknedlik/XrdLustreOssWrapper
-RUN cd XrdLustreOssWrapper/src && LIBRARY_PATH=/xrdinstall/xrootd/lib64 XRD_PATH=/xrdinstall/xrootd LUSTRE_PATH=/lustre make 
+RUN cd XrdLustreOssWrapper/src && LIBRARY_PATH=/xrdinstall/xrootd/lib64 XRD_PATH=/xrdinstall/xrootd LUSTRE_PATH=/lustre make
 RUN cp XrdLustreOssWrapper/src/LibXrdLustreOss.so* /xrdinstall/build/xrootd/lib
 # debianize the heck out of it
 COPY end.sh debianize.sh
-RUN ls
 RUN ./debianize.sh
 CMD ["/bin/bash"]
 RUN mkdir /xrdinstall/vol
