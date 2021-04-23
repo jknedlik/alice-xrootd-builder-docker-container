@@ -2,12 +2,10 @@
 # -*- docker-image-name: "xrootd_base" -*-
 # xrootd base image. Provides the base image for each xrootd service
 
-ARG DEB_VER=debian:8.8
+ARG DEB_VER
 FROM $DEB_VER
 MAINTAINER jknedlik <j.knedlik@gsi.de>
-ARG DEB_VER=debian:8.8
 RUN apt-get update
-RUN echo $DEB_VER
 RUN apt-get dist-upgrade -y
 RUN apt-get install -y git wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev
 RUN  if [  "x$DEB_VER" = "xdebian:9.5" ] ; then apt-get install -y libssl1.0-dev libssl1.0.2; else apt-get install -y libssl-dev; fi
