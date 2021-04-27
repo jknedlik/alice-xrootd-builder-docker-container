@@ -14,22 +14,28 @@ RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/
 WORKDIR /xrdinstall
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 # Comment in to see build-failures:
-COPY xrd3-installer-debug /tmp/xrd3-installer
 ARG DEB_VER
+COPY xrd3-installer-debug /tmp/xrd3-installer
+# we need the custom xrd-installer for buster
 RUN if [ "x$DEB_VER" = "xdebian:10.8" ]; then cp /tmp/xrd3-installer xrd3-installer; fi
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
 WORKDIR /xrdinstall
+# in case we need the openssl1.1 version for buster, copy it over 
 COPY xrootd-alicetokenacc/tokenauthz-custom-openssl1.1/ /tmp/tokenauthz-custom-openssl1.1
+# we run the custom xrd-installer for Buster, and the original one for stretch/jessie
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
-#Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+# Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 WORKDIR /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
+# in case of jessie/stretch, copy non-openssl1.1 version
 COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/TTokenAuthz.cxx
 COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/TTokenAuthz.h
-RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ]; then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10; fi
-RUN rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o
-RUN  make clean && make && make install
-#COPY xrootd-alicetokenacc/
+# Remake the libtokenauthz without openssl 1.1
+RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ];\
+ then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10 && \
+ rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o \
+ && make clean && make && make install; fi
+# copy custom alicetokenacc-sources with symlink feature
 WORKDIR /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
