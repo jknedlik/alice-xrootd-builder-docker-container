@@ -1,28 +1,15 @@
 # -*- docker-image-name: "xrootd_base" -*-
 # xrootd base image. Provides the base image for each xrootd service
 
-ARG DEB_VER=debian:9.13
+ARG DEB_VER
 FROM $DEB_VER
 MAINTAINER pkramp <p.n.kramp@gsi.de>
-ARG DEB_VER=debian:9.13
-RUN echo $DEB_VER
 RUN apt-get update
 RUN apt-get dist-upgrade -y
 
 RUN apt-get install -y wget cmake libxml2 libxml2-dev  automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev unzip pkg-config sqlite3 libsqlite3-dev
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y lcmaps-plugins-jobrep voms-server lcmaps-plugins-voms lcmaps-globus-interface
-RUN apt-get install -y build-essential voms-dev
-
-RUN echo "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list
-RUN echo "deb http://deb.debian.org/debian stretch-backports-sloppy main" > /etc/apt/sources.list.d/stretch-backports.sloppy.list
-RUN cat /etc/apt/sources.list.d/stretch-backports.list
-RUN ls -la /etc/apt/sources.list.d/
+RUN apt-get install -y libssl-dev libkrb5-dev build-essential voms-dev lcmaps-plugins-jobrep voms-server lcmaps-plugins-voms lcmaps-globus-interface
 RUN apt-get update
-RUN apt-get -t stretch-backports install -y libkrb5-dev gcc g++
-RUN apt-get -t stretch-backports-sloppy install -y libarchive13
-RUN apt-get -t stretch-backports install -y cmake
-#RUN if [  "x$DEB_VER" = "xdebian:8.8" ] ; then apt-get install -y libssl-dev; else apt-get install -y libssl1.0-dev libssl1.0.2; fi
 #softlink for escapetokenlib to find libcrypto in lib64 ...
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
 
@@ -37,11 +24,10 @@ RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && openssl version
 
 # XROOTD
 WORKDIR /xrdinstall
-ARG XRD_VER
-RUN curl -L -O https://github.com/xrootd/xrootd/archive/v5.1.0-rc3.tar.gz
-RUN tar -xzf v5.1.0-rc3.tar.gz
+RUN curl -L -O https://github.com/xrootd/xrootd/archive/v5.1.1.tar.gz
+RUN tar -xzf v5.1.1.tar.gz
 RUN ls
-RUN mv xrootd-5.1.0-rc3/* .
+RUN mv xrootd-5.1.1/* .
 RUN mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && make -j 8 && make install
 RUN rm -rf build
 RUN mkdir build && cd build && cmake ../ && make -j 8 && make install
@@ -103,7 +89,9 @@ RUN ./debianize.sh
 CMD ["/bin/bash"]
 RUN mkdir /xrdinstall/vol
 COPY escape-xrootd-deb /xrdinstall/escape-xrootd-deb
+ARG DEB_VER
 COPY controlfiles/$DEB_VER  /xrdinstall/escape-xrootd-deb/debian/DEBIAN/control
+ARG XRD_VER
 RUN sed -i s/UPSTREAM_VERSION/${XRD_VER}/g /xrdinstall/escape-xrootd-deb/debian/DEBIAN/control
 RUN echo "escape-xrootd (${XRD_VER}${ADDITIONAL_VERSION_STRING}) UNRELEASED; urgency=medium\n" >/xrdinstall/escape-xrootd-deb/changelog
 RUN echo "  * Package has been built.\n" >>/xrdinstall/escape-xrootd-deb/changelog
