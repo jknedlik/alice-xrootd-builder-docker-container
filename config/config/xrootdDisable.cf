@@ -1,4 +1,4 @@
-all.export /
+all.export / r/w
 #xrd.protocol xrootd *
 #xrd.port 1094
 #all.adminpath /var/log/xrootd
@@ -15,4 +15,6 @@ alicetokenacc.symlinks /tmp/symlinks
 alicetokenacc.nolfnlog /var/log/xrootd/nolfn.log
 alicetokenacc.authorizationfile /var/run/xrootd/.authz/xrootd/
 alicetokenacc.enableSymlinks False
+alicetokenacc.logLinkCreation True
 alicetokenacc.enableDebug False
+alicetokenacc.linklog /tmp/linklogDisable.log
