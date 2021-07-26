@@ -13,12 +13,11 @@ RUN if [  "x$DEB_VER" = "xdebian:9.5" ] ; then apt-get install -y libssl1.0-dev 
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
 #build lustre
 RUN apt-get install -y linux-headers-amd64 libyaml-dev
+WORKDIR /xrdinstall
 RUN git clone --branch 2.12.4 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git
 RUN cd lustre-release && git checkout 2.12.4 && sh autogen.sh && ./configure --disable-modules --prefix /lustre
 RUN cd lustre-release && make -j8 
 RUN cd lustre-release && make install
-
-WORKDIR /xrdinstall
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 # Comment in to see build-failures:
 ARG DEB_VER
@@ -42,19 +41,18 @@ COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/TTokenAuthz.h
 RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ];\
  then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10 && \
  rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o \
- && make clean && make && make install; fi
+ && make clean && CXXFLAGS="-std=c++11" && make && make install; fi
 # copy custom alicetokenacc-sources with symlink feature
 WORKDIR /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/LockingIO.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/LockingIO.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
-COPY xrootd-alicetokenacc/Makefile.am /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+COPY xrootd-alicetokenacc/Makefile.in /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
+#COPY xrootd-alicetokenacc/Makefile.am /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 RUN rm /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5//XrdAliceTokenAcc.o
 #Then run make
-RUN make clean && make && make install
-RUN ls -la
-
+RUN make clean && CXXFLAGS="-std=c++11" && make && make install
 WORKDIR /xrdinstall
 ARG ADDITIONAL_VERSION_STRING
 RUN mkdir build
@@ -63,11 +61,11 @@ RUN cp -r xrootd build/xrootd
 COPY service /xrdinstall/service
 COPY config /xrdinstall/config
 COPY lintian /xrdinstall/lintian
-
 #build LibXrdLustreOss.so
 RUN git clone --branch master --depth 1 --single-branch https://github.com/jknedlik/XrdLustreOssWrapper
 RUN cd XrdLustreOssWrapper/src && LIBRARY_PATH=/xrdinstall/xrootd/lib64 XRD_PATH=/xrdinstall/xrootd LUSTRE_PATH=/lustre make
 RUN cp XrdLustreOssWrapper/src/LibXrdLustreOss.so* /xrdinstall/build/xrootd/lib
+RUN ldd /xrdinstall/build/xrootd/lib/LibXrdLustreOss.so*
 # debianize the heck out of it
 COPY end.sh debianize.sh
 RUN ./debianize.sh

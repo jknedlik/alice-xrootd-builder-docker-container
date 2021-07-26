@@ -16,5 +16,5 @@ alicetokenacc.nolfnlog /var/log/xrootd/nolfn.log
 alicetokenacc.authorizationfile /var/run/xrootd/.authz/xrootd/
 alicetokenacc.enableSymlinks False
 alicetokenacc.logLinkCreation True
-alicetokenacc.enableDebug False
+alicetokenacc.enableDebug True
 alicetokenacc.linklog /tmp/linklogDisable.log

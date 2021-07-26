@@ -9,6 +9,7 @@ echo Moving alice-install to a nice debian package friendly layout
   rm -r build/usr/lib64
   mkdir build/usr/lib/alice-xrootd
   mv build/usr/lib/* build/usr/lib/alice-xrootd
+  ln -s /usr/lib/liblustreapi.so build/usr/lib/alice-xrootd/liblustreapi.so.1
 
 echo removing supposedly unimportant build-binaries and manpages of xrdinstaller
   cd build/usr/bin
