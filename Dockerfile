@@ -14,8 +14,11 @@ RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/
 #build lustre
 RUN apt-get install -y linux-headers-amd64 libyaml-dev
 WORKDIR /xrdinstall
-RUN git clone --branch 2.12.4 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git
-RUN cd lustre-release && git checkout 2.12.4 && sh autogen.sh && ./configure --disable-modules --prefix /lustre
+ARG DEB_VER
+RUN if [  "x$DEB_VER" = "xdebian:8.8" ]; then git clone --branch 2.12.4 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git; fi
+RUN if [  "x$DEB_VER" = "xdebian:8.8" ]; then cd lustre-release && git checkout 2.12.4 && sh autogen.sh && ./configure --disable-modules --prefix  /lustre; fi
+RUN if [  "x$DEB_VER" = "xdebian:10.8" ]; then git clone --branch 2.12.6 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git; fi
+RUN if [  "x$DEB_VER" = "xdebian:10.8" ]; then cd lustre-release && git checkout 2.12.6 && sh autogen.sh && ./configure --disable-modules --prefix  /lustre; fi
 RUN cd lustre-release && make -j8 
 RUN cd lustre-release && make install
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
@@ -46,9 +49,6 @@ RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ];\
 WORKDIR /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
-COPY xrootd-alicetokenacc/LockingIO.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
-COPY xrootd-alicetokenacc/LockingIO.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
-COPY xrootd-alicetokenacc/Makefile.in /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 #COPY xrootd-alicetokenacc/Makefile.am /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 RUN rm /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5//XrdAliceTokenAcc.o
 #Then run make
