@@ -2,3 +2,5 @@
 /etc/xrootd/xrootdEnable.cf
 /etc/xrootd/xrootdDisable.cf
 /etc/logrotate.d/xrootd
+/etc/xrootd/privkey.pem
+/etc/xrootd/pubkey.pem

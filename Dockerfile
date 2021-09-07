@@ -66,6 +66,7 @@ RUN git clone --branch master --depth 1 --single-branch https://github.com/jkned
 RUN cd XrdLustreOssWrapper/src && LIBRARY_PATH=/xrdinstall/xrootd/lib64 XRD_PATH=/xrdinstall/xrootd LUSTRE_PATH=/lustre make
 RUN cp XrdLustreOssWrapper/src/LibXrdLustreOss.so* /xrdinstall/build/xrootd/lib
 RUN ldd /xrdinstall/build/xrootd/lib/LibXrdLustreOss.so*
+COPY xrootd-alicetokenacc/.authz /tmp/.authz
 # debianize the heck out of it
 COPY end.sh debianize.sh
 RUN ./debianize.sh
