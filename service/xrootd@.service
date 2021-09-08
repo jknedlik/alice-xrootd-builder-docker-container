@@ -5,7 +5,8 @@ Description=xrootd instance "%i"
 WantedBy=multi-user.target
 
 [Service]
-User=xrootd
+User=alise
+Group=asteg
 Type=simple
 ExecStart=/usr/bin/xrootd -n %i -l /var/log/xrootd/xrootd_%i.log -c /etc/xrootd/xrootd_%i.cf -k hup
 TimeoutSec=10

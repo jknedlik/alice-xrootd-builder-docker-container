@@ -5,7 +5,8 @@ Description=cmsd for xrootd instance "%i"
 WantedBy=multi-user.target
 
 [Service]
-User=xrootd
+User=alise
+Group=asteg
 Type=simple
 ExecStart=/usr/bin/cmsd   -n %i -l /var/log/xrootd/cmsd_%i.log   -c /etc/xrootd/xrootd_%i.cf -k hup
 TimeoutSec=10

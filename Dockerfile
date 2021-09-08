@@ -38,18 +38,23 @@ RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
 # Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 WORKDIR /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
 # in case of jessie/stretch, copy non-openssl1.1 version
-COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/TTokenAuthz.cxx
-COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/TTokenAuthz.h
+#COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/TTokenAuthz.cxx
+#COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/TTokenAuthz.h
 # Remake the libtokenauthz without openssl 1.1
-RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ];\
- then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10 && \
- rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o \
- && make clean && CXXFLAGS="-std=c++11" && make && make install; fi
+#RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ];\
+ #then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10 && \
+ #rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o \
+ #&& make clean && CXXFLAGS="-std=c++11" && make && make install; fi
 # copy custom alicetokenacc-sources with symlink feature
+
+COPY TTokenAuthz.cxx /tmp/
+COPY TTokenAuthz.h /tmp
+RUN cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10 && \
+rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o \
+&& make clean && CXXFLAGS="-std=c++11" && make && make install
 WORKDIR /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.hh /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 COPY xrootd-alicetokenacc/XrdAliceTokenAcc.cc /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
-#COPY xrootd-alicetokenacc/Makefile.am /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 RUN rm /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5//XrdAliceTokenAcc.o
 #Then run make
 RUN make clean && CXXFLAGS="-std=c++11" && make && make install
