@@ -13,7 +13,7 @@ if (!(-f $ARGV[0]))
 }
 
 $ARGV[0] =~ "\_([a-zA-Z0-9]+).conf";
-open(my $fh, '>', '/var/run/xrootd/'.$1.'/apmon.pid');
+open(my $fh, '>', '/run/xrootd/'.$1.'/apmon.pid');
 print $fh $$;
 close $fh;
 

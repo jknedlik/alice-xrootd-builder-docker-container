@@ -79,7 +79,8 @@ CMD ["/bin/bash"]
 RUN mkdir /xrdinstall/vol
 COPY alice-xrootd-deb /xrdinstall/alice-xrootd-deb
 COPY controlfiles/$DEB_VER  /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
-RUN sed -i s/UPSTREAM_VERSION/${XRD_VER}/g /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
+RUN sed -i s/UPSTREAM_VERSION/${XRD_VER}v1.5/g /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
+RUN cat /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
 RUN echo "alice-xrootd (${XRD_VER}${ADDITIONAL_VERSION_STRING}) UNRELEASED; urgency=medium\n" >/xrdinstall/alice-xrootd-deb/changelog
 RUN echo "  * Package has been built.\n" >>/xrdinstall/alice-xrootd-deb/changelog
 RUN echo " -- Jan Knedlik <j.knedlik@gsi.de>  $(date -R)" >>/xrdinstall/alice-xrootd-deb/changelog

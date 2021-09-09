@@ -2,7 +2,7 @@ all.export / r/w
 #xrd.protocol xrootd *
 #xrd.port 1094
 #all.adminpath /var/log/xrootd
-#all.pidpath /var/run/xrootd
+#all.pidpath /run/xrootd
 #xrootd.export /
 oss.localroot /lustre/nyx/alice/aliafse/
 xrootd.seclib /usr/lib/alice-xrootd/libXrdSec.so
@@ -13,7 +13,7 @@ ofs.authorize
 ofs.trace all debug
 alicetokenacc.symlinks /tmp/symlinks
 alicetokenacc.nolfnlog /var/log/xrootd/nolfn.log
-alicetokenacc.authorizationfile /var/run/xrootd/.authz/xrootd/TkAuthz.Authorization
+alicetokenacc.authorizationfile /run/xrootd/.authz/xrootd/TkAuthz.Authorization
 alicetokenacc.enableSymlinks True
 alicetokenacc.logLinkCreation True
 alicetokenacc.enableDebug True

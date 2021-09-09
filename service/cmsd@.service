@@ -10,4 +10,4 @@ Group=asteg
 Type=simple
 ExecStart=/usr/bin/cmsd   -n %i -l /var/log/xrootd/cmsd_%i.log   -c /etc/xrootd/xrootd_%i.cf -k hup
 TimeoutSec=10
-WorkingDirectory=/var/run/xrootd
+WorkingDirectory=/run/xrootd

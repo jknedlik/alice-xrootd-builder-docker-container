@@ -9,4 +9,4 @@ User=xrootd
 Type=simple
 ExecStart=/usr/bin/apmon /etc/xrootd/apmon_%i.conf
 TimeoutSec=10
-WorkingDirectory=/var/run/xrootd
+WorkingDirectory=/run/xrootd
