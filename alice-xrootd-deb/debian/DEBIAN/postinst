@@ -1,7 +1,6 @@
 #!/bin/bash -e
 ln -s /usr/share/man/man1/xrdcp.1 /usr/share/man/man1/xrdcopy.1
 chown alise:asteg /var/log/xrootd
-chown alise:asteg /run/xrootd
 chmod 775 /var/log/xrootd
-chmod 775 /run/xrootd
 echo "d /run/xrootd 0775 alise asteg" >/usr/lib/tmpfiles.d/xrootd.conf
+systemd-tmpfiles --create
