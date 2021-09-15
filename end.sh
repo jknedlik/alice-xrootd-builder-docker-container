@@ -31,19 +31,34 @@ echo removing supposedly unimportant build-binaries and manpages of xrdinstaller
 echo removing .la files
   find ./build -type f -name '*.la' -exec rm {} +
 echo stripping binaries and shared libraries of their debug symbols and setting rpath
-for fn in `find build/usr/lib  -exec file -i '{}' \; |grep x-sharedlib | awk -F':' {'print $1'};`
+echo "AAAAAAAA"
+for fn in `find build/usr/lib  -exec file -i '{}' \; |grep 'x-pie-executable; charset=binary\|x-sharedlib' | awk -F':' {'print $1'};`
 do
   echo  "  Stripping $fn and setting rpath to /usr/lib/escape-xrootd"
   strip --strip-debug --strip-unneeded $fn
-  patchelf --set-rpath /usr/lib/escape-xrootd $fn
+  patchelf --set-rpath /usr/lib/escape-xrootd:/usr/lib $fn
   chmod a-x $fn
 done
-for fn in `find build/usr/bin -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary\|application/x-sharedlib; charset=binary' | awk -F':' {'print $1'}` ;
+file -i '{}' build/usr/bin/*
+for fn in `find build/usr/bin -type f -executable -exec file -i '{}' \; | grep 'x-pie-executable; charset=binary\|application/x-executable; charset=binary' | awk -F':' {'print $1'}` ;
 do
   echo  "   Stripping $fn and setting its rpath"
   strip --strip-debug --strip-unneeded $fn
   patchelf --set-rpath /usr/lib/escape-xrootd $fn
 done
+#for fn in `find build/usr/lib  -exec file -i '{}' \; |grep x-sharedlib | awk -F':' {'print $1'};`
+#do
+#  echo  "  Stripping $fn and setting rpath to /usr/lib/escape-xrootd"
+#  strip --strip-debug --strip-unneeded $fn
+#  patchelf --set-rpath /usr/lib/escape-xrootd $fn
+#  chmod a-x $fn
+#done
+#for fn in `find build/usr/bin -type f -executable -exec file -i '{}' \; | grep 'x-executable; charset=binary\|application/x-sharedlib; charset=binary' | awk -F':' {'print $1'}` ;
+#do
+#  echo  "   Stripping $fn and setting its rpath"
+#  strip --strip-debug --strip-unneeded $fn
+#  patchelf --set-rpath /usr/lib/escape-xrootd $fn
+#done
 #echo gzipping info and manpages, removing xrdcopy softlink first
 #  rm build/usr/share/man/man1/xrdcopy.1
 #  gzip -9n build/usr/share/info/*.info*  build/usr/share/man/man*/*

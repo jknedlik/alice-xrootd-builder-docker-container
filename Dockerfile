@@ -6,32 +6,9 @@ FROM $DEB_VER
 MAINTAINER pkramp <p.n.kramp@gsi.de>
 RUN apt-get update
 RUN apt-get dist-upgrade -y
-
 RUN apt-get install -y wget cmake libxml2 libxml2-dev  automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev unzip pkg-config sqlite3 libsqlite3-dev
 RUN apt-get install -y libssl-dev libkrb5-dev build-essential voms-dev lcmaps-plugins-jobrep voms-server lcmaps-plugins-voms lcmaps-globus-interface
 RUN apt-get update
-#softlink for escapetokenlib to find libcrypto in lib64 ...
-RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
-
-# OPENSSL 1.1.1
-RUN mkdir openssl
-WORKDIR /xrdinstall/openssl
-RUN curl -L -O https://www.openssl.org/source/openssl-1.1.1i.tar.gz
-RUN tar -xzf openssl-1.1.1i.tar.gz
-RUN mv openssl-1.1.1i/* .
-RUN ./config && make && make install
-RUN export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && openssl version
-
-# XROOTD
-WORKDIR /xrdinstall
-RUN curl -L -O https://github.com/xrootd/xrootd/archive/v5.1.1.tar.gz
-RUN tar -xzf v5.1.1.tar.gz
-RUN ls
-RUN mv xrootd-5.1.1/* .
-RUN mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && make -j 8 && make install
-RUN rm -rf build
-RUN mkdir build && cd build && cmake ../ && make -j 8 && make install
-ARG ADDITIONAL_VERSION_STRING
 
 #GTEST
 RUN mkdir gtest
@@ -44,27 +21,32 @@ RUN mkdir build && cd build && cmake ../ && ls && make -j 8 && make install
 #JWT
 RUN mkdir jwt
 WORKDIR /xrdinstall/jwt
-RUN curl -L https://github.com/Thalhammer/jwt-cpp/archive/v0.3.1.zip -o jwtv0.3.1.zip
-RUN unzip "jwtv0.3.1.zip"
-RUN cd jwt-cpp-0.3.1/ && cat Makefile && make -j 8 && ls &&  make install
+RUN curl -L https://github.com/Thalhammer/jwt-cpp/archive/v0.5.1.zip -o jwtv0.5.1.zip
+RUN unzip "jwtv0.5.1.zip"
+RUN cd jwt-cpp-0.5.1/ && cmake . && make -j 8 && ls &&  make install
 ARG ADDITIONAL_VERSION_STRING
-RUN ls
+
 #SCITOKENS-CPP
 RUN mkdir scitokens-cpp
 WORKDIR /xrdinstall/scitokens-cpp
-RUN curl -L https://github.com/scitokens/scitokens-cpp/archive/v0.5.1.zip -o scitokens-cpp.zip
+RUN curl -L https://github.com/scitokens/scitokens-cpp/archive/v0.6.3.zip -o scitokens-cpp.zip
 RUN unzip "scitokens-cpp.zip"
-RUN mv scitokens-cpp-0.5.1/* .
+RUN mv scitokens-cpp-0.6.3/* .
 RUN mkdir build && cd build && cmake ../ && ls && make -j 8 && make install
 RUN rm -rf build && mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && ls && make -j 8 && make install
 
-#SCITOKENS-XROOTD
-RUN mkdir scitokens-xrootd
-WORKDIR /xrdinstall/scitokens-xrootd
-RUN curl -L https://github.com/scitokens/xrootd-scitokens/archive/v1.2.2.zip -o scitokens-xrootd.zip
-RUN unzip "scitokens-xrootd.zip"
-RUN mv xrootd-scitokens-1.2.2/* .
-RUN mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && ls && make -j 8 && make install
+# XROOTD
+WORKDIR /xrdinstall
+RUN curl -L -O https://github.com/xrootd/xrootd/archive/v5.3.1.tar.gz
+RUN tar -xzf v5.3.1.tar.gz
+RUN ls
+RUN mv xrootd-5.3.1/* .
+RUN mkdir build && cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=/xrdinstall/xrootd && make -j 8 && make install
+RUN rm -rf build
+RUN mkdir build && cd build && cmake ../ && make -j 8 && make install
+ARG ADDITIONAL_VERSION_STRING
+
+#RUN find / -iname "*libXrdAccSciTokens*"
 
 #XROOTD-LCMAPS
 RUN mkdir xrootd-lcmaps
@@ -95,7 +77,7 @@ ARG XRD_VER
 RUN sed -i s/UPSTREAM_VERSION/${XRD_VER}/g /xrdinstall/escape-xrootd-deb/debian/DEBIAN/control
 RUN echo "escape-xrootd (${XRD_VER}${ADDITIONAL_VERSION_STRING}) UNRELEASED; urgency=medium\n" >/xrdinstall/escape-xrootd-deb/changelog
 RUN echo "  * Package has been built.\n" >>/xrdinstall/escape-xrootd-deb/changelog
-RUN echo " -- Jan Knedlik <j.knedlik@gsi.de>  $(date -R)" >>/xrdinstall/escape-xrootd-deb/changelog
+RUN echo " -- Paul-Niklas Kramp <p.kramp@gsi.de>  $(date -R)" >>/xrdinstall/escape-xrootd-deb/changelog
 RUN cp -r /xrdinstall/build/* escape-xrootd-deb/debian/
 RUN chmod 0755 /xrdinstall/escape-xrootd-deb/debian/DEBIAN/postinst /xrdinstall/escape-xrootd-deb/debian/DEBIAN/postrm
 RUN make -C escape-xrootd-deb
