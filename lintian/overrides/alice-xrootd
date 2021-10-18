@@ -3,3 +3,4 @@ alice-xrootd: embedded-library
 alice-xrootd: extra-license-file
 alice-xrootd: binary-without-manpage
 alice-xrootd: binary-or-shlib-defines-rpath
+alice-xrootd: maintainer-script-should-not-use-adduser-system-without-home

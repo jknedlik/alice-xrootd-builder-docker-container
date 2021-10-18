@@ -69,7 +69,17 @@ COPY lintian /xrdinstall/lintian
 RUN git clone --branch master --depth 1 --single-branch https://github.com/jknedlik/XrdLustreOssWrapper
 RUN cd XrdLustreOssWrapper/src && LIBRARY_PATH=/xrdinstall/xrootd/lib64 XRD_PATH=/xrdinstall/xrootd LUSTRE_PATH=/lustre make
 RUN cp XrdLustreOssWrapper/src/LibXrdLustreOss.so* /xrdinstall/build/xrootd/lib
-RUN ldd /xrdinstall/build/xrootd/lib/LibXrdLustreOss.so*
+
+#MLSENSOR
+RUN apt-get -y install alien
+RUN wget http://quattorsrv.lal.in2p3.fr/packages/wlcg/el7/x86_64/mlsensor-1.2.6-1.el7.noarch.rpm
+RUN alien mlsensor-1.2.6-1.el7.noarch.rpm
+RUN dpkg -x mlsensor_1.2.6-2_all.deb /xrdinstall/build/xrootd
+RUN mv /xrdinstall/build/xrootd/etc/mlsensor/mlsensor.properties.tmp  /xrdinstall/config
+RUN rm /xrdinstall/build/xrootd/usr/lib/systemd/system/mlsensor.service
+COPY service/mlsensor.service service
+RUN find / -iname "*mlsensor*"
+
 COPY xrootd-alicetokenacc/.authz /tmp/.authz
 # debianize the heck out of it
 COPY end.sh debianize.sh
@@ -87,5 +97,5 @@ RUN cp -r /xrdinstall/build/* alice-xrootd-deb/debian/
 RUN chmod 0755 /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postinst /xrdinstall/alice-xrootd-deb/debian/DEBIAN/postrm
 RUN make -C alice-xrootd-deb test
 ENTRYPOINT ["cp"]
-
+RUN dpkg -c alice-xrootd-deb/debian.deb
 CMD ["alice-xrootd-deb/debian.deb","vol/alice-xrootd.deb"]

@@ -4,3 +4,4 @@
 /etc/logrotate.d/xrootd
 /etc/xrootd/privkey.pem
 /etc/xrootd/pubkey.pem
+/etc/mlsensor/mlsensor.properties.default

@@ -1,0 +1,21 @@
+[Unit]
+Description=MonaLisa Monitoring Agent
+Wants=network-online.target
+After=network.target network-online.target
+AssertPathExists=/etc/mlsensor/mlsensor.properties
+
+[Service]
+Type=simple
+User=mlsensor
+Group=mlsensor
+SyslogIdentifier=mlsensor
+PIDFile=/run/mlsensor.pid
+WorkingDirectory=/tmp
+
+ExecStart=/bin/sh -c 'test -e /opt/eos/xrootd/bin/xrdfs && export PATH=/opt/eos/xrootd/bin:${PATH} LD_LIBRARY_PATH=/opt/eos/xrootd/lib64:${LD_LIBRARY_PATH}; \
+exec /usr/bin/java -Xms16m -Xmx32m -DMLSENSOR_HOME=/tmp -Djava.util.logging.config.class=lia.Monitor.monitor.LoggerConfigClass \
+-Dlia.Monitor.ConfigURL=file:/etc/mlsensor/mlsensor.properties \
+-jar /usr/share/java/mlsensor/MLSensor.jar'
+
+[Install]
+WantedBy=multi-user.target

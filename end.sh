@@ -1,8 +1,11 @@
 #!/bin/bash
 #echo Changing ownership to current user: $USER
 # chown -R $USER build/*
+#
 echo Moving alice-install to a nice debian package friendly layout
-  mv build/* build/usr
+  cp -r build/xrootd/usr/* build/xrootd
+  rm -rf build/xrootd/usr/
+  mv build/xrootd build/usr
   rm -r build/usr/etc
   rm -r build/usr/share/doc
   mv build/usr/lib64/* build/usr/lib/
@@ -55,6 +58,10 @@ echo Moving Unit-files to correct path
 echo Moving default config files to correct path
   mkdir -p build/etc/xrootd/
   cp config/config/* build/etc/xrootd
+echo Moving mlsensor-properties
+  mkdir -p build/etc/mlsensor
+  find / -iname "*mlsensor*"
+  mv /xrdinstall/config/mlsensor.properties.tmp build/etc/mlsensor/mlsensor.properties.default
 echo Creating lintian overrides for xrdinstaller problems that cannot be fixed
   cp -r lintian build/usr/share/lintian
 echo Removing scripts dir and xrd.sh :\)
