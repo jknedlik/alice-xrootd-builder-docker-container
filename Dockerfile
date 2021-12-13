@@ -8,26 +8,23 @@ MAINTAINER jknedlik <j.knedlik@gsi.de>
 RUN apt-get update
 RUN apt-get dist-upgrade -y
 RUN apt-get install -y git wget cmake libxml2 libxml2-dev libssl-dev automake autoconf libtool curl libcurl4-gnutls-dev libkrb5-3 gcc g++ debhelper dpkg lintian gzip chrpath patchelf zlib1g-dev zlib1g uuid-dev
-RUN if [  "x$DEB_VER" = "xdebian:9.5" ] ; then apt-get install -y libssl1.0-dev libssl1.0.2; else apt-get install -y libssl-dev; fi
 #softlink for alicetokenlib to find libcrypto in lib64 ...
 RUN mkdir /usr/lib64 && ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so /usr/lib64/libcrypto.so
-#build lustre
+
+# build Lustre
 RUN apt-get install -y linux-headers-amd64 libyaml-dev
 WORKDIR /xrdinstall
-ARG DEB_VER
-RUN if [  "x$DEB_VER" = "xdebian:8.8" ]; then git clone --branch 2.12.4 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git; fi
-RUN if [  "x$DEB_VER" = "xdebian:8.8" ]; then cd lustre-release && git checkout 2.12.4 && sh autogen.sh && ./configure --disable-modules --prefix  /lustre; fi
-RUN if [  "x$DEB_VER" = "xdebian:10.8" ]; then git clone --branch 2.12.6 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git; fi
-RUN if [  "x$DEB_VER" = "xdebian:10.8" ]; then cd lustre-release && git checkout 2.12.6 && sh autogen.sh && ./configure --disable-modules --prefix  /lustre; fi
+RUN git clone --branch 2.12.6 --depth 1 --single-branch git://git.whamcloud.com/fs/lustre-release.git
+RUN cd lustre-release && git checkout 2.12.6 && sh autogen.sh && ./configure --disable-modules --prefix  /lustre
 RUN cd lustre-release && make -j8 
 RUN cd lustre-release && make install
+# Build XRootD
 RUN curl -O http://alitorrent.cern.ch/src/xrd3/xrd3-installer
 # Comment in to see build-failures:
-ARG DEB_VER
 COPY xrd3-installer-debug /tmp/xrd3-installer
 #COPY xrd3-installer-lfile /tmp/xrd3-installer-lfile
 # we need the custom xrd-installer for buster
-RUN if [ "x$DEB_VER" = "xdebian:10.8" ]; then cp /tmp/xrd3-installer xrd3-installer; fi
+RUN cp /tmp/xrd3-installer xrd3-installer
 RUN chmod a+x xrd3-installer
 ARG XRD_VER
 WORKDIR /xrdinstall
@@ -37,14 +34,6 @@ COPY xrootd-alicetokenacc/tokenauthz-custom-openssl1.1/ /tmp/tokenauthz-custom-o
 RUN ./xrd3-installer --install --version=$XRD_VER --prefix=/xrdinstall/xrootd
 # Copy edited symlink source to /tmp/xrd-installer-/alicetokenacc/xrootd-alicetokenacc-1.2.5
 WORKDIR /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10
-# in case of jessie/stretch, copy non-openssl1.1 version
-COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.cxx /tmp/TTokenAuthz.cxx
-COPY xrootd-alicetokenacc/tokenauthz-1.1.10/TTokenAuthz.h /tmp/TTokenAuthz.h
-# Remake the libtokenauthz without openssl 1.1
-RUN  if [  "x$DEB_VER" = "xdebian:9.5" ]  || [  "x$DEB_VER" = "xdebian:8.8" ];\
- then cp /tmp/TTokenAuthz.* /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10 && \
- rm /tmp/xrd-installer-/libtokenauthz/tokenauthz-1.1.10/TTokenAuthz.o \
- && make clean && CXXFLAGS="-std=c++11" && make && make install; fi
 # copy custom alicetokenacc-sources with symlink feature
 COPY TTokenAuthz.cxx /tmp/
 COPY TTokenAuthz.h /tmp
@@ -87,6 +76,7 @@ RUN ./debianize.sh
 CMD ["/bin/bash"]
 RUN mkdir /xrdinstall/vol
 COPY alice-xrootd-deb /xrdinstall/alice-xrootd-deb
+ARG DEB_VER
 COPY controlfiles/$DEB_VER  /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
 RUN sed -i s/UPSTREAM_VERSION/${XRD_VER}v1.5.1build1/g /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
 RUN cat /xrdinstall/alice-xrootd-deb/debian/DEBIAN/control
