@@ -30,6 +30,22 @@ We also install the mlsensor software for ALICE monitoring into the package.
 Afterwards, everything gets packaged into a debian package, which gets written into the build folder.
 
 
+## Install
+
+Carefully clone this repository using:
+
+```
+git clone --recurse-submodules 
+```
+
+If you have done without recursing all submodules you can: 
+
+```
+git submodule update --init --recursive
+```
+
+to initialize all submodules correctly afterwards.
+
 ## Building via container
 
 Build the container (and package) via
