@@ -4,5 +4,5 @@ chown alise:asteg /var/log/xrootd
 chmod 775 /var/log/xrootd
 echo "d /run/xrootd 0775 alise asteg" >/usr/lib/tmpfiles.d/xrootd.conf
 systemd-tmpfiles --create
-/usr/sbin/addgroup --system mlsensor
-adduser --system --ingroup mlsensor mlsensor
+id -g mlsensor &>/dev/null || /usr/sbin/addgroup --system mlsensor
+id -u mlsensor &>/dev/null || adduser --system --ingroup mlsensor mlsensor
