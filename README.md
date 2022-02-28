@@ -28,3 +28,15 @@ After installing the normal ALICE required software, we replace the xrootd-alice
 Then, the XrdLustreOssWrapper is compiled.  
 We also install the mlsensor software for ALICE monitoring into the package.  
 Afterwards, everything gets packaged into a debian package, which gets written into the build folder.
+
+
+## Building via container
+
+Build the container (and package) via
+
+```
+./start.sh
+```
+
+After a successful setup the debian package will be available in the `build` directory.
+See the `start.sh` shell script for more details.
